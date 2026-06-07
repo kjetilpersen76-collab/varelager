@@ -614,7 +614,7 @@ function showKalkulator() {
   const letters = getUniqueLetters();
   let lettersHtml = '';
   letters.forEach(letter => {
-    lettersHtml += '<button class="kalk-letter-btn ' + (selectedLetter === letter ? 'active' : '') + '" onclick="selectKalkLetter(\' + letter + \')">' + letter + '</button>';
+    lettersHtml += '<button class="kalk-letter-btn ' + (selectedLetter === letter ? 'active' : '') + '" onclick="selectKalkLetter(\'' + letter + \')">' + letter + '</button>';
   });
 
   $("kalkulatorArea").innerHTML = '<div class="section" style="margin-top:15px;">' +
@@ -696,7 +696,7 @@ function processUt(search) {
     '<p><strong>Lager:</strong> ' + item.lager + '</p><p><strong>Størrelse:</strong> ' + item.storrelse + '</p>' +
     '<p><strong>Netto:</strong> ' + formatNumber(item.netto) + ' kg</p><p><strong>Inn dato:</strong> ' + formatDateNo(item.dato) + '</p>' +
     '<div class="info-box warning" style="margin-top:10px;">Varen vil flyttes til <strong>Produsert</strong></div>' +
-    '<div class="btn-row"><button class="btn btn-success" onclick="confirmUt(\' + item.id + \')">✅ Flytt til Produsert</button>' +
+    '<div class="btn-row"><button class="btn btn-success" onclick="confirmUt(\'' + item.id + \')">✅ Flytt til Produsert</button>' +
     '<button class="btn btn-danger" onclick="$('utResult').innerHTML=''">Avbryt</button></div></div>';
 }
 
