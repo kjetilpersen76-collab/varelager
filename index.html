@@ -155,6 +155,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 </style>
 <base target="_blank">
 <base target="_blank">
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <base target="_blank">
 </head>
 <body>
@@ -1922,45 +1923,35 @@ function startQRScanInn(dato, tid, lager, lev, storrelse, kar, brutto, tara, net
     `<button class="btn btn-primary" onclick="manualQRInputInn()">Lagre med QR</button></div>`;
   document.body.appendChild(overlay);
 
-  // Prøv å åpne kamera direkte med getUserMedia
+  // Åpne kamera med getUserMedia
   navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
     .then(function(stream) {
       const video = document.getElementById("qrVideoInn");
+      const canvas = document.getElementById("qrCanvasInn");
+      const ctx = canvas.getContext("2d");
       video.srcObject = stream;
       qrScanner = stream;
       $("qrStatusInn").textContent = "Kamera aktiv - hold QR-kode foran...";
 
-      // Prøv å laste html5-qrcode og bruke den
-      loadHtml5Qrcode(function() {
-        if (typeof Html5Qrcode !== 'undefined') {
-          try {
-            const qrReader = new Html5Qrcode("qrVideoInn");
-            qrReader.start(
-              { facingMode: "environment" },
-              { fps: 5, qrbox: { width: 250, height: 250 } },
-              function(decodedText) {
-                qrReader.stop().then(function() {
-                  stopQRScanInn();
-                  saveInnWithQR(decodedText);
-                }).catch(function() {
-                  stopQRScanInn();
-                  saveInnWithQR(decodedText);
-                });
-              },
-              function(errorMessage) { /* ignorer */ }
-            ).catch(function(err) {
-              console.log("html5-qrcode feil:", err);
-              // Fallback: fortsett med video men uten QR-lesing
-              $("qrStatusInn").textContent = "Kamera aktiv. Bruk manuell inntasting hvis QR ikke leses.";
-            });
-          } catch(e) {
-            console.log("html5-qrcode init feil:", e);
-            $("qrStatusInn").textContent = "Kamera aktiv. Bruk manuell inntasting.";
-          }
-        } else {
-          $("qrStatusInn").textContent = "Kamera aktiv. QR-bibliotek ikke lastet. Bruk manuell inntasting.";
+      // Start QR-scanning loop med jsQR
+      var scanInterval = setInterval(function() {
+        if (!qrScanner || !document.getElementById("qrVideoInn")) {
+          clearInterval(scanInterval);
+          return;
         }
-      });
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          var code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
+          if (code && code.data) {
+            clearInterval(scanInterval);
+            stopQRScanInn();
+            saveInnWithQR(code.data);
+          }
+        }
+      }, 500); // Scan hvert 500ms
     })
     .catch(function(err) {
       console.log("Kamera feil:", err);
