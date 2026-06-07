@@ -6,17 +6,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Varelager</title>
-<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Varelager%22%2C%22short_name%22%3A%22Varelager%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a1a2e%22%2C%22theme_color%22%3A%22%231a1a2e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%2520viewBox%3D%270%25200%2520192%2520192%27%253E%253Crect%2520fill%3D%27%252300d4ff%27%2520width%3D%27192%27%2520height%3D%27192%27%2520rx%3D%2724%27%2F%253E%253Ctext%2520x%3D%2796%27%2520y%3D%27120%27%2520font-size%3D%27100%27%2520text-anchor%3D%27middle%27%2520fill%3D%27%25231a1a2e%27%253E%25F0%259F%2593%25A6%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #eee; min-height: 100vh; overflow-x: hidden; }
 .container { max-width: 500px; margin: 0 auto; padding: 10px; }
 .hidden { display: none !important; }
 
-/* Login */
 .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
 .login-screen h1 { font-size: 2rem; margin-bottom: 10px; color: #00d4ff; }
-.login-screen .subtitle { color: #888; margin-bottom: 30px; }
 .user-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; margin-bottom: 20px; }
 .user-card { background: #16213e; border: 2px solid #0f3460; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.2s; }
 .user-card:hover, .user-card.active { border-color: #00d4ff; background: #1a2a4a; }
@@ -27,6 +24,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .pin-btn:active { background: #00d4ff; color: #1a1a2e; }
 .pin-btn.wide { grid-column: span 2; }
 .login-actions { display: flex; gap: 10px; width: 100%; max-width: 400px; }
+
 .btn { flex: 1; padding: 14px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
 .btn-primary { background: #00d4ff; color: #1a1a2e; }
 .btn-secondary { background: #16213e; color: #eee; border: 2px solid #0f3460; }
@@ -35,18 +33,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .btn-warning { background: #f39c12; color: #fff; }
 .btn:active { transform: scale(0.97); opacity: 0.8; }
 
-/* Header */
 .app-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; margin-bottom: 10px; border-bottom: 2px solid #0f3460; }
 .app-header h1 { font-size: 1.3rem; color: #00d4ff; }
 .user-info { font-size: 0.85rem; color: #888; }
 .logout-btn { background: #e94560; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
 
-/* Navigation */
 .nav-tabs { display: flex; gap: 4px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
 .nav-tab { flex: 1; min-width: 50px; background: #16213e; border: 2px solid #0f3460; border-radius: 8px; padding: 10px 3px; text-align: center; font-size: 0.7rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; color: #fff; }
 .nav-tab.active { background: #00d4ff; color: #1a1a2e; border-color: #00d4ff; font-weight: 600; }
 
-/* Forms */
 .section { background: #16213e; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
 .section-title { font-size: 1.1rem; color: #00d4ff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 .form-group { margin-bottom: 12px; }
@@ -54,13 +49,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #0f3460; border-radius: 8px; background: #1a1a2e; color: #eee; font-size: 1rem; }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #00d4ff; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 
-/* Buttons row */
 .btn-row { display: flex; gap: 10px; margin-top: 15px; }
 .btn-row .btn { flex: 1; }
 
-/* Tables */
 .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
 .data-table th { background: #0f3460; color: #00d4ff; padding: 8px; text-align: left; font-size: 0.8rem; }
 .data-table td { padding: 8px; border-bottom: 1px solid #0f3460; }
@@ -70,7 +62,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .edit-btn { background: #0f9b6e; color: #fff; }
 .del-btn { background: #e94560; color: #fff; }
 
-/* Kalkulator for UT */
 .kalk-display { background: #1a1a2e; border: 2px solid #0f3460; border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 10px; font-size: 1.8rem; font-weight: 700; color: #00d4ff; min-height: 50px; letter-spacing: 2px; }
 .kalk-letters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; justify-content: center; }
 .kalk-letter-btn { background: #16213e; border: 2px solid #0f3460; border-radius: 8px; padding: 10px 14px; font-size: 1rem; font-weight: 700; color: #00d4ff; cursor: pointer; transition: all 0.15s; min-width: 40px; text-align: center; }
@@ -81,40 +72,33 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .kalk-num-btn.wide { grid-column: span 2; }
 .kalk-actions { display: flex; gap: 10px; }
 
-/* QR Scanner */
 .qr-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .qr-overlay video { max-width: 90%; max-height: 60%; border-radius: 12px; }
 .qr-overlay .close-btn { position: absolute; top: 20px; right: 20px; background: #e94560; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-size: 1rem; cursor: pointer; z-index: 1001; }
 .qr-manual { background: #16213e; padding: 20px; border-radius: 12px; margin-top: 20px; width: 90%; max-width: 400px; }
 
-/* Toast */
 .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #0f9b6e; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 0.95rem; z-index: 2000; transition: transform 0.3s; }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .toast.error { background: #e94560; }
 .toast.info { background: #3498db; }
 
-/* Modal */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1500; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .modal-content { background: #16213e; border-radius: 16px; padding: 20px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 .modal-header h2 { color: #00d4ff; font-size: 1.2rem; }
 .modal-close { background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer; }
 
-/* Checkbox */
 .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .checkbox-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: #00d4ff; }
 
-/* Stats */
 .stat-box { background: #1a1a2e; border-radius: 8px; padding: 12px; text-align: center; }
 .stat-box .value { font-size: 1.5rem; font-weight: 700; color: #00d4ff; }
 .stat-box .label { font-size: 0.75rem; color: #888; margin-top: 4px; }
 
-/* Info box */
 .info-box { background: #1a2a4a; border-left: 4px solid #00d4ff; padding: 12px; border-radius: 0 8px 8px 0; margin-bottom: 15px; font-size: 0.9rem; }
 .info-box.warning { border-left-color: #f39c12; background: #4a3a1a; }
 .info-box.error { border-left-color: #e94560; background: #4a1a2a; }
 
-/* Print */
 @media print {
   body { background: #fff; color: #000; font-family: Arial, sans-serif; }
   .app-header, .nav-tabs, .btn-row, .no-print { display: none !important; }
@@ -130,43 +114,26 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .info-box { background: #fff; border-left: 3px solid #000; color: #000; }
   .info-box.warning { border-left-color: #f39c12; background: #fff; }
   .info-box.error { border-left-color: #e94560; background: #fff; }
-  .kontroll-stat .val { color: #000; }
-  .kontroll-stat .lab { color: #333; }
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 8px; }
 ::-webkit-scrollbar-track { background: #1a1a2e; }
 ::-webkit-scrollbar-thumb { background: #0f3460; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #00d4ff; }
 ::-webkit-scrollbar-corner { background: #1a1a2e; }
 
-/* Horisontal scroll for tabeller */
 .table-scroll-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; }
 
-/* Hvit kalender-ikon i date inputs */
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
 }
 
-/* Piler for rekkefølge */
 .order-btn { background: #16213e; border: 1px solid #0f3460; color: #00d4ff; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; margin: 0 2px; }
 .order-btn:active { background: #00d4ff; color: #1a1a2e; }
 
-/* Kontroll — bred PC-layout */
-.kontroll-container { 
-  min-width: 1200px; 
-  overflow-x: auto; 
-  -webkit-overflow-scrolling: touch; 
-  padding-bottom: 10px;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  padding-left: 10px;
-  padding-right: 10px;
-  box-sizing: border-box;
-}
+.kontroll-container { min-width: 1200px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; width: 100vw; margin-left: calc(-50vw + 50%); padding-left: 10px; padding-right: 10px; box-sizing: border-box; }
 .kontroll-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
 .kontroll-stat { background: #1a2a4a; border-radius: 10px; padding: 15px; text-align: center; }
 .kontroll-stat .val { font-size: 1.4rem; font-weight: 700; color: #00d4ff; }
@@ -188,162 +155,23 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 </style>
 <base target="_blank">
 <base target="_blank">
-<base target="_blank">
-<base target="_blank">
-<base target="_blank">
-<base target="_blank">
-<base target="_blank">
 </head>
 <body>
 <div id="app"></div>
 
 <script>
-const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.0.0" };
 
-// ===================== SYNC SYSTEM v1.9.0 =====================
-let SYNC_QUEUE = [];  // Offline-kø for endringer
-let SYNC_INTERVAL = null;  // setInterval referanse
-let LAST_SYNC = null;  // Siste vellykkede sync-tidspunkt
-let IS_SYNCING = false;  // Om vi holder på å sync'e nå
-
-function initSync() {
-  // Start bakgrunnssync hvert 2. minutt
-  if (SYNC_INTERVAL) clearInterval(SYNC_INTERVAL);
-  SYNC_INTERVAL = setInterval(function() {
-    if (DB.settings.gscriptUrl && !IS_SYNCING) {
-      backgroundSync();
-    }
-  }, 120000); // 2 minutter
-
-  // Hent data fra Sheet ved oppstart hvis URL er satt
-  if (DB.settings.gscriptUrl) {
-    fetchFromGScript(true); // true = silent (ikke vis meldinger)
-  }
-}
-
-function backgroundSync() {
-  if (IS_SYNCING) return;
-  IS_SYNCING = true;
-  updateSyncIndicator("syncing");
-
-  // Send kø først
-  if (SYNC_QUEUE.length > 0) {
-    processSyncQueue(function() {
-      // Deretter hent nyeste data
-      fetchFromGScript(true);
-    });
-  } else {
-    fetchFromGScript(true);
-  }
-}
-
-function processSyncQueue(callback) {
-  var url = DB.settings.gscriptUrl;
-  if (!url) {
-    IS_SYNCING = false;
-    updateSyncIndicator("error");
-    if (callback) callback();
-    return;
-  }
-
-  // Send HELE DB.items (alle paller) til Sheet
-  // Sheet = master, så vi overskriver alltid med komplett datasett
-  SYNC_QUEUE = []; // Tøm kø
-  var allItems = DB.items.slice(); // Kopier alle items
-
-  var jsonData = JSON.stringify(allItems);
-
-  var script = document.createElement("script");
-  var callbackName = "syncQueueCallback_" + Date.now();
-  window[callbackName] = function(data) {
-    delete window[callbackName];
-    if (script.parentNode) script.parentNode.removeChild(script);
-    if (data && data.success) {
-      LAST_SYNC = new Date();
-      updateSyncIndicator("ok");
-    } else {
-      // Legg tilbake i kø hvis feil
-      SYNC_QUEUE = itemsToSync.concat(SYNC_QUEUE);
-      updateSyncIndicator("error");
-    }
-    IS_SYNCING = false;
-    if (callback) callback();
-  };
-
-  script.onerror = function() {
-    delete window[callbackName];
-    if (script.parentNode) script.parentNode.removeChild(script);
-    SYNC_QUEUE = itemsToSync.concat(SYNC_QUEUE);
-    IS_SYNCING = false;
-    updateSyncIndicator("error");
-    if (callback) callback();
-  };
-
-  script.src = url + "?action=write&data=" + encodeURIComponent(jsonData) + "&callback=" + callbackName;
+// html5-qrcode loader
+function loadHtml5Qrcode(callback) {
+  if (typeof Html5Qrcode !== 'undefined') { if (callback) callback(); return; }
+  var script = document.createElement('script');
+  script.src = 'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
+  script.onload = function() { if (callback) callback(); };
+  script.onerror = function() { showToast('QR-scanner ikke tilgjengelig', 'error'); };
   document.head.appendChild(script);
-
-  setTimeout(function() {
-    if (window[callbackName]) {
-      delete window[callbackName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-      SYNC_QUEUE = itemsToSync.concat(SYNC_QUEUE);
-      IS_SYNCING = false;
-      updateSyncIndicator("error");
-      if (callback) callback();
-    }
-  }, 15000);
 }
 
-function queueForSync(item) {
-  SYNC_QUEUE.push(item);
-  updateSyncIndicator("pending");
-
-  // Prøv å sync umiddelbart hvis nett er tilgjengelig
-  if (navigator.onLine && DB.settings.gscriptUrl && !IS_SYNCING) {
-    processSyncQueue();
-  }
-}
-
-function updateSyncIndicator(status) {
-  var indicator = $("syncIndicator");
-  if (!indicator) return;
-
-  var colors = {
-    ok: "#0f9b6e",      // Grønn - alt OK
-    syncing: "#3498db", // Blå - syncer nå
-    pending: "#f39c12", // Gul - venter på sync
-    error: "#e94560",   // Rød - feil
-    offline: "#888"      // Grå - offline
-  };
-
-  var labels = {
-    ok: "●",
-    syncing: "⟳",
-    pending: "◐",
-    error: "✕",
-    offline: "○"
-  };
-
-  indicator.style.color = colors[status] || colors.offline;
-  indicator.textContent = labels[status] || labels.offline;
-  indicator.title = status === "ok" ? "Synkronisert" : 
-                    status === "syncing" ? "Syncer..." :
-                    status === "pending" ? "Venter på sync" :
-                    status === "error" ? "Sync-feil" : "Offline";
-}
-
-// Lytt på nettverksstatus
-window.addEventListener("online", function() {
-  updateSyncIndicator("pending");
-  if (DB.settings.gscriptUrl && !IS_SYNCING) {
-    processSyncQueue();
-  }
-});
-
-window.addEventListener("offline", function() {
-  updateSyncIndicator("offline");
-});
-
+const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.0.0" };
 
 let LAGRE = ["Kjøpslager", "Sortert", "Produsert", "Slettet"];
 let LEVERANDORER = ["Kjøllefjord", "Båtsfjord", "Berlevåg", "Nesseby"];
@@ -395,26 +223,26 @@ function showToast(msg, type) {
   setTimeout(() => { toast.remove(); }, 3000);
 }
 
-function init() { loadDB(); renderLogin(); initSync(); }
+function init() { loadDB(); renderLogin(); }
 
 // ===================== LOGIN =====================
 function renderLogin() {
   const app = $("app");
   let usersHtml = "";
   DB.users.forEach(u => {
-    usersHtml += '<div class="user-card ' + (selectedUserId === u.id ? 'active' : '') + '" onclick="selectUser(' + u.id + ')"><div class="name">' + u.name + '</div></div>';
+    usersHtml += `<div class="user-card ${selectedUserId === u.id ? 'active' : ''}" onclick="selectUser(${u.id})"><div class="name">${u.name}</div></div>`;
   });
-  app.innerHTML = '<div class="login-screen"><h1>📦 Varelager <span style="font-size:0.7rem;color:#888;vertical-align:middle;margin-left:5px;">v' + CONFIG.VERSION + '</span></h1><div class="subtitle">v' + CONFIG.VERSION + '</div>' +
-    '<div class="user-grid">' + usersHtml + '</div>' +
-    '<div class="pin-display">' + (currentPin ? currentPin.replace(/./g, "●") : "") + '</div>' +
-    '<div class="pin-pad">' +
-    '<button class="pin-btn" onclick="addPin(1)">1</button><button class="pin-btn" onclick="addPin(2)">2</button><button class="pin-btn" onclick="addPin(3)">3</button>' +
-    '<button class="pin-btn" onclick="addPin(4)">4</button><button class="pin-btn" onclick="addPin(5)">5</button><button class="pin-btn" onclick="addPin(6)">6</button>' +
-    '<button class="pin-btn" onclick="addPin(7)">7</button><button class="pin-btn" onclick="addPin(8)">8</button><button class="pin-btn" onclick="addPin(9)">9</button>' +
-    '<button class="pin-btn wide" onclick="addPin(0)">0</button><button class="pin-btn" onclick="clearPin()">⌫</button>' +
-    '</div>' +
-    '<div class="login-actions"><button class="btn btn-primary" onclick="login()">Logg inn</button><button class="btn btn-secondary" onclick="showRegister()">Ny bruker</button></div>' +
-    '</div>';
+  app.innerHTML = `<div class="login-screen"><h1>📦 Varelager <span style="font-size:0.7rem;color:#888;vertical-align:middle;margin-left:5px;">v${CONFIG.VERSION}</span></h1><div class="subtitle">v${CONFIG.VERSION}</div>` +
+    `<div class="user-grid">${usersHtml}</div>` +
+    `<div class="pin-display">${currentPin ? currentPin.replace(/./g, "●") : ""}</div>` +
+    `<div class="pin-pad">` +
+    `<button class="pin-btn" onclick="addPin(1)">1</button><button class="pin-btn" onclick="addPin(2)">2</button><button class="pin-btn" onclick="addPin(3)">3</button>` +
+    `<button class="pin-btn" onclick="addPin(4)">4</button><button class="pin-btn" onclick="addPin(5)">5</button><button class="pin-btn" onclick="addPin(6)">6</button>` +
+    `<button class="pin-btn" onclick="addPin(7)">7</button><button class="pin-btn" onclick="addPin(8)">8</button><button class="pin-btn" onclick="addPin(9)">9</button>` +
+    `<button class="pin-btn wide" onclick="addPin(0)">0</button><button class="pin-btn" onclick="clearPin()">⌫</button>` +
+    `</div>` +
+    `<div class="login-actions"><button class="btn btn-primary" onclick="login()">Logg inn</button><button class="btn btn-secondary" onclick="showRegister()">Ny bruker</button></div>` +
+    `</div>`;
 }
 
 function selectUser(id) { selectedUserId = id; currentPin = ""; renderLogin(); }
@@ -431,12 +259,12 @@ function login() {
 }
 
 function showRegister() {
-  $("app").innerHTML = '<div class="login-screen"><h1>📝 Ny bruker</h1><div class="container" style="width:100%;max-width:400px;">' +
-    '<div class="form-group"><label>Navn</label><input type="text" id="regName" placeholder="Ditt navn"></div>' +
-    '<div class="form-group"><label>Pinkode (4 siffer)</label><input type="password" id="regPin1" placeholder="****" maxlength="4"></div>' +
-    '<div class="form-group"><label>Bekreft pinkode</label><input type="password" id="regPin2" placeholder="****" maxlength="4"></div>' +
-    '<div class="btn-row"><button class="btn btn-success" onclick="registerUser()">Registrer</button><button class="btn btn-secondary" onclick="renderLogin()">Avbryt</button></div>' +
-    '</div></div>';
+  $("app").innerHTML = `<div class="login-screen"><h1>📝 Ny bruker</h1><div class="container" style="width:100%;max-width:400px;">` +
+    `<div class="form-group"><label>Navn</label><input type="text" id="regName" placeholder="Ditt navn"></div>` +
+    `<div class="form-group"><label>Pinkode (4 siffer)</label><input type="password" id="regPin1" placeholder="****" maxlength="4"></div>` +
+    `<div class="form-group"><label>Bekreft pinkode</label><input type="password" id="regPin2" placeholder="****" maxlength="4"></div>` +
+    `<div class="btn-row"><button class="btn btn-success" onclick="registerUser()">Registrer</button><button class="btn btn-secondary" onclick="renderLogin()">Avbryt</button></div>` +
+    `</div></div>`;
 }
 
 function registerUser() {
@@ -456,16 +284,16 @@ function logout() { currentUser = null; currentTab = "inn"; currentRapSubTab = "
 // ===================== APP UI =====================
 function renderApp() {
   const app = $("app");
-  app.innerHTML = '<div class="container"><div class="app-header"><div><h1>📦 Varelager <span style="font-size:0.7rem;color:#888;vertical-align:middle;margin-left:5px;">v' + CONFIG.VERSION + '</span></h1><div class="user-info">' + currentUser.name + '</div></div><div style="display:flex;align-items:center;gap:10px;"><span id="syncIndicator" style="font-size:1.2rem;cursor:help;" title="Synkroniseringsstatus">○</span><button class="logout-btn" onclick="logout()">Logg ut</button></div></div>' +
-    '<div class="nav-tabs">' +
-    '<button class="nav-tab ' + (currentTab === "inn" ? "active" : "") + '" onclick="switchTab(\'inn\')">📥 INN</button>' +
-    '<button class="nav-tab ' + (currentTab === "ut" ? "active" : "") + '" onclick="switchTab(\'ut\')">📤 UT</button>' +
-    '<button class="nav-tab ' + (currentTab === "korr" ? "active" : "") + '" onclick="switchTab(\'korr\')">📝 Korr</button>' +
-    '<button class="nav-tab ' + (currentTab === "rap" ? "active" : "") + '" onclick="switchTab(\'rap\')">📊 Rap</button>' +
-    '<button class="nav-tab ' + (currentTab === "synk" ? "active" : "") + '" onclick="switchTab(\'synk\')">🔄 Synk</button>' +
-    '<button class="nav-tab ' + (currentTab === "lager" ? "active" : "") + '" onclick="switchTab(\'lager\')">📦 Lager</button>' +
-    '<button class="nav-tab ' + (currentTab === "inst" ? "active" : "") + '" onclick="switchTab(\'inst\')">⚙️ Inst</button>' +
-    '</div><div id="tabContent"></div></div>';
+  app.innerHTML = `<div class="container"><div class="app-header"><div><h1>📦 Varelager <span style="font-size:0.7rem;color:#888;vertical-align:middle;margin-left:5px;">v${CONFIG.VERSION}</span></h1><div class="user-info">${currentUser.name}</div></div><div style="display:flex;align-items:center;gap:10px;"><span id="syncIndicator" style="font-size:1.2rem;cursor:help;" title="Synkroniseringsstatus">○</span><button class="logout-btn" onclick="logout()">Logg ut</button></div></div>` +
+    `<div class="nav-tabs">` +
+    `<button class="nav-tab ${currentTab === "inn" ? "active" : ""}" onclick="switchTab('inn')">📥 INN</button>` +
+    `<button class="nav-tab ${currentTab === "ut" ? "active" : ""}" onclick="switchTab('ut')">📤 UT</button>` +
+    `<button class="nav-tab ${currentTab === "korr" ? "active" : ""}" onclick="switchTab('korr')">📝 Korr</button>` +
+    `<button class="nav-tab ${currentTab === "rap" ? "active" : ""}" onclick="switchTab('rap')">📊 Rap</button>` +
+    `<button class="nav-tab ${currentTab === "synk" ? "active" : ""}" onclick="switchTab('synk')">🔄 Synk</button>` +
+    `<button class="nav-tab ${currentTab === "lager" ? "active" : ""}" onclick="switchTab('lager')">📦 Lager</button>` +
+    `<button class="nav-tab ${currentTab === "inst" ? "active" : ""}" onclick="switchTab('inst')">⚙️ Inst</button>` +
+    `</div><div id="tabContent"></div></div>`;
   renderTabContent();
 }
 
@@ -487,48 +315,23 @@ function renderTabContent() {
 }
 
 // ===================== INN =====================
-let qrModeInn = false;
-let currentQrId = "";
-
 function renderInn(content) {
   const now = new Date();
   const dateStr = now.toISOString().split("T")[0];
   const timeStr = now.toTimeString().slice(0, 5);
-
-  let karFieldHtml, scanBtnHtml;
-  if (qrModeInn) {
-    karFieldHtml = '<div class="form-group"><label>QR-KODE</label><input type="text" id="innKar" value="' + (currentQrId || "") + '" readonly style="background:#0f3460;color:#00d4ff;font-weight:600;"></div>';
-    scanBtnHtml = '<button class="btn btn-secondary" onclick="switchToKarMode()">📝 Tast inn kar nr</button>';
-  } else {
-    karFieldHtml = '<div class="form-group"><label>Kar nr</label><input type="text" id="innKar" placeholder="F.eks. K-123"></div>';
-    scanBtnHtml = '<button class="btn btn-primary" onclick="startQRScanForInn()">📷 Scan QR &amp; Lagre</button>';
-  }
-
-  content.innerHTML = '<div class="section"><div class="section-title">📥 Vare INN</div>' +
-    '<div class="form-row"><div class="form-group"><label>Dato</label><input type="date" id="innDato" value="' + dateStr + '"></div>' +
-    '<div class="form-group"><label>Klokkeslett</label><input type="time" id="innTid" value="' + timeStr + '"></div></div>' +
-    '<div class="form-group"><label>Lager</label><select id="innLager" onchange="updateStorrelser()"><option value="">Velg lager...</option>' + LAGRE.map(l => '<option value="' + l + '">' + l + '</option>').join("") + '</select></div>' +
-    '<div class="form-group"><label>Leverandør</label><select id="innLev"><option value="">Velg leverandør...</option>' + LEVERANDORER.map(l => '<option value="' + l + '">' + l + '</option>').join("") + '</select></div>' +
-    '<div class="form-group"><label>Størrelse</label><select id="innStorrelse"><option value="">Velg størrelse...</option></select></div>' +
-    karFieldHtml +
-    '<div class="form-row"><div class="form-group"><label>Brutto kilo</label><input type="text" id="innBrutto" placeholder="0,0" oninput="calcNetto()"></div>' +
-    '<div class="form-group"><label>Tara kilo</label><input type="text" id="innTara" placeholder="0,0" oninput="calcNetto()"></div></div>' +
-    '<div class="form-group"><label>Netto kilo</label><input type="text" id="innNetto" placeholder="0,0" readonly style="background:#0f3460;"></div>' +
-    '<div class="btn-row"><button class="btn btn-success" onclick="saveInn()">💾 Lagre</button>' + scanBtnHtml + '</div>' +
-    '</div>';
+  content.innerHTML = `<div class="section"><div class="section-title">📥 Vare INN</div>` +
+    `<div class="form-row"><div class="form-group"><label>Dato</label><input type="date" id="innDato" value="${dateStr}"></div>` +
+    `<div class="form-group"><label>Klokkeslett</label><input type="time" id="innTid" value="${timeStr}"></div></div>` +
+    `<div class="form-group"><label>Lager</label><select id="innLager" onchange="updateStorrelser()"><option value="">Velg lager...</option>${LAGRE.map(l => `<option value="${l}">${l}</option>`).join("")}</select></div>` +
+    `<div class="form-group"><label>Leverandør</label><select id="innLev"><option value="">Velg leverandør...</option>${LEVERANDORER.map(l => `<option value="${l}">${l}</option>`).join("")}</select></div>` +
+    `<div class="form-group"><label>Størrelse</label><select id="innStorrelse"><option value="">Velg størrelse...</option></select></div>` +
+    `<div class="form-group"><label>Kar nr</label><input type="text" id="innKar" placeholder="F.eks. K-123"></div>` +
+    `<div class="form-row"><div class="form-group"><label>Brutto kilo</label><input type="text" id="innBrutto" placeholder="0,0" oninput="calcNetto()"></div>` +
+    `<div class="form-group"><label>Tara kilo</label><input type="text" id="innTara" placeholder="0,0" oninput="calcNetto()"></div></div>` +
+    `<div class="form-group"><label>Netto kilo</label><input type="text" id="innNetto" placeholder="0,0" readonly style="background:#0f3460;"></div>` +
+    `<div class="btn-row"><button class="btn btn-success" onclick="saveInn()">💾 Lagre</button><button class="btn btn-primary" onclick="saveInn(true)">📷 Scan QR & Lagre</button></div>` +
+    `</div>`;
   updateStorrelser();
-}
-
-function switchToKarMode() {
-  qrModeInn = false;
-  currentQrId = "";
-  renderTabContent();
-}
-
-function switchToQRMode(qrId) {
-  qrModeInn = true;
-  currentQrId = qrId;
-  renderTabContent();
 }
 
 function updateStorrelser() {
@@ -536,7 +339,7 @@ function updateStorrelser() {
   const sel = $("innStorrelse");
   if (!sel || !lager) return;
   const sizes = STORRELSER[lager] || [];
-  sel.innerHTML = '<option value="">Velg størrelse...</option>' + sizes.map(s => '<option value="' + s + '">' + s + '</option>').join("");
+  sel.innerHTML = `<option value="">Velg størrelse...</option>${sizes.map(s => `<option value="${s}">${s}</option>`).join("")}`;
 }
 
 function calcNetto() {
@@ -546,48 +349,43 @@ function calcNetto() {
   $("innNetto").value = formatNumber(netto);
 }
 
-function saveInn() {
+function saveInn(withQR) {
   const dato = $("innDato").value;
   const tid = $("innTid").value;
   const lager = $("innLager").value;
   const lev = $("innLev").value;
   const storrelse = $("innStorrelse").value;
-  const kar = qrModeInn ? "" : $("innKar").value.trim();
-  const qrId = qrModeInn ? currentQrId : "";
+  const kar = $("innKar").value.trim();
   const brutto = parseNumber($("innBrutto").value);
   const tara = parseNumber($("innTara").value);
   const netto = parseNumber($("innNetto").value);
 
   if (!lager || !lev || !storrelse) { showToast("Fyll ut alle obligatoriske felter", "error"); return; }
-  if (!qrModeInn && kar && DB.items.some(i => i.kar === kar && !i.utDato)) { showToast("Advarsel: Kar nr finnes allerede!", "error"); }
+  if (kar && DB.items.some(i => i.kar === kar && !i.utDato)) { showToast("Advarsel: Kar nr finnes allerede!", "error"); }
 
   const item = {
-    id: generateId(), qrId: qrId, kar: kar,
+    id: generateId(), qrId: withQR ? kar : "", kar: withQR ? "" : kar,
     dato: dato + "T" + tid, lager: lager, lev: lev, storrelse: storrelse,
     brutto: brutto, tara: tara, netto: netto, utDato: null, userInn: currentUser.name
   };
 
-  DB.items.push(item); saveDB(); showToast("Vare lagret!"); queueForSync(item);
-
-  $("innBrutto").value = ""; $("innTara").value = ""; $("innNetto").value = "";
+  DB.items.push(item); saveDB(); showToast("Vare lagret!");
+  $("innKar").value = ""; $("innBrutto").value = ""; $("innTara").value = ""; $("innNetto").value = "";
   const now = new Date();
   $("innDato").value = now.toISOString().split("T")[0];
   $("innTid").value = now.toTimeString().slice(0, 5);
-
-  if (!qrModeInn) {
-    $("innKar").value = "";
-  }
+  if (withQR) { showToast("QR-kode lagret: " + item.qrId); }
 }
 
 // ===================== UT =====================
 function renderUt(content) {
-  content.innerHTML = '<div class="section"><div class="section-title">📤 Vare UT → Produsert</div>' +
-    '<div class="form-group"><label>Scan QR-kode eller bruk kalkulator</label>' +
-    '<div class="btn-row"><button class="btn btn-primary" onclick="startQRScanForUt()">📷 Scan QR</button><button class="btn btn-secondary" onclick="showKalkulator()">📝 Tast inn pallenr.</button></div></div>' +
-    '<div class="form-group"><label>Eller velg lager for oversikt</label>' +
-    '<select id="utLagerOversikt" onchange="showLagerOversikt()"><option value="">Velg lager...</option>' + LAGRE.filter(l => l !== "Produsert" && l !== "Slettet").map(l => '<option value="' + l + '">' + l + '</option>').join("") + '</select></div>' +
-    '<div id="kalkulatorArea"></div>' +
-    '<div id="utResult"></div></div>';
+  content.innerHTML = `<div class="section"><div class="section-title">📤 Vare UT → Produsert</div>` +
+    `<div class="form-group"><label>Scan QR-kode eller bruk kalkulator</label>` +
+    `<div class="btn-row"><button class="btn btn-primary" onclick="startQRScan()">📷 Scan QR</button><button class="btn btn-secondary" onclick="showKalkulator()">📝 Tast inn pallenr.</button></div></div>` +
+    `<div class="form-group"><label>Eller velg lager for oversikt</label>` +
+    `<select id="utLagerOversikt" onchange="showLagerOversikt()"><option value="">Velg lager...</option>${LAGRE.filter(l => l !== "Produsert" && l !== "Slettet").map(l => `<option value="${l}">${l}</option>`).join("")}</select></div>` +
+    `<div id="kalkulatorArea"></div>` +
+    `<div id="utResult"></div></div>`;
 }
 
 function getUniqueLetters() {
@@ -607,23 +405,30 @@ function showKalkulator() {
   const letters = getUniqueLetters();
   let lettersHtml = '';
   letters.forEach(letter => {
-    lettersHtml += '<button class="kalk-letter-btn ' + (selectedLetter === letter ? 'active' : '') + '" onclick="selectKalkLetter('' + letter + '')">' + letter + '</button>';
+    lettersHtml += `<button class="kalk-letter-btn ${selectedLetter === letter ? 'active' : ''}" data-letter="${letter}">${letter}</button>`;
   });
 
-  $("kalkulatorArea").innerHTML = '<div class="section" style="margin-top:15px;">' +
-    '<div class="section-title">📝 Tast inn pallenr.</div>' +
-    '<div class="kalk-letters">' + lettersHtml + '</div>' +
-    '<div class="kalk-display" id="kalkDisplay">' + (selectedLetter + kalkInput) + '</div>' +
-    '<div class="kalk-pad">' +
-    '<button class="kalk-num-btn" onclick="kalkAdd(1)">1</button><button class="kalk-num-btn" onclick="kalkAdd(2)">2</button><button class="kalk-num-btn" onclick="kalkAdd(3)">3</button>' +
-    '<button class="kalk-num-btn" onclick="kalkAdd(4)">4</button><button class="kalk-num-btn" onclick="kalkAdd(5)">5</button><button class="kalk-num-btn" onclick="kalkAdd(6)">6</button>' +
-    '<button class="kalk-num-btn" onclick="kalkAdd(7)">7</button><button class="kalk-num-btn" onclick="kalkAdd(8)">8</button><button class="kalk-num-btn" onclick="kalkAdd(9)">9</button>' +
-    '<button class="kalk-num-btn wide" onclick="kalkAdd(0)">0</button><button class="kalk-num-btn" onclick="kalkBack()">⌫</button>' +
-    '</div>' +
-    '<div class="kalk-actions">' +
-    '<button class="btn btn-success" onclick="kalkSearch()">OK (vare ut av lager)</button>' +
-    '<button class="btn btn-secondary" onclick="kalkClear()">Tilbake</button>' +
-    '</div></div>';
+  $("kalkulatorArea").innerHTML = `<div class="section" style="margin-top:15px;">` +
+    `<div class="section-title">📝 Tast inn pallenr.</div>` +
+    `<div class="kalk-letters">${lettersHtml}</div>` +
+    `<div class="kalk-display" id="kalkDisplay">${selectedLetter + kalkInput}</div>` +
+    `<div class="kalk-pad">` +
+    `<button class="kalk-num-btn" onclick="kalkAdd(1)">1</button><button class="kalk-num-btn" onclick="kalkAdd(2)">2</button><button class="kalk-num-btn" onclick="kalkAdd(3)">3</button>` +
+    `<button class="kalk-num-btn" onclick="kalkAdd(4)">4</button><button class="kalk-num-btn" onclick="kalkAdd(5)">5</button><button class="kalk-num-btn" onclick="kalkAdd(6)">6</button>` +
+    `<button class="kalk-num-btn" onclick="kalkAdd(7)">7</button><button class="kalk-num-btn" onclick="kalkAdd(8)">8</button><button class="kalk-num-btn" onclick="kalkAdd(9)">9</button>` +
+    `<button class="kalk-num-btn wide" onclick="kalkAdd(0)">0</button><button class="kalk-num-btn" onclick="kalkBack()">⌫</button>` +
+    `</div>` +
+    `<div class="kalk-actions">` +
+    `<button class="btn btn-success" onclick="kalkSearch()">OK (vare ut av lager)</button>` +
+    `<button class="btn btn-secondary" onclick="kalkClear()">Tilbake</button>` +
+    `</div></div>`;
+
+  // Legg til event listeners for bokstav-knappene
+  document.querySelectorAll('.kalk-letter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      selectKalkLetter(this.dataset.letter);
+    });
+  });
 }
 
 function selectKalkLetter(letter) {
@@ -632,7 +437,7 @@ function selectKalkLetter(letter) {
   updateKalkDisplay();
   var buttons = document.querySelectorAll('.kalk-letter-btn');
   buttons.forEach(function(btn) {
-    if (btn.textContent === letter) {
+    if (btn.dataset.letter === letter) {
       btn.classList.add('active');
     } else {
       btn.classList.remove('active');
@@ -672,24 +477,18 @@ function processUt(search) {
   const item = DB.items.find(i => {
     const karStr = i.kar ? String(i.kar) : "";
     const qrStr = i.qrId ? String(i.qrId) : "";
-    return (karStr && karStr.toLowerCase() === search.toLowerCase()) || 
-           (qrStr && qrStr.toLowerCase() === search.toLowerCase());
+    return karStr.toLowerCase() === search.toLowerCase() || qrStr.toLowerCase() === search.toLowerCase();
   });
-
-  if (!item) { 
-    showToast("QR-koden ikke i databasen", "error"); 
-    return; 
-  }
-
+  if (!item) { showToast("Vare ikke funnet", "error"); return; }
   if (item.lager === "Produsert") { showToast("Vare er allerede produsert", "error"); return; }
 
-  $("utResult").innerHTML = '<div class="section" style="margin-top:15px;"><div class="section-title">Vare funnet</div>' +
-    '<p><strong>Kar:</strong> ' + (item.kar || "N/A") + '</p><p><strong>QR:</strong> ' + (item.qrId || "N/A") + '</p>' +
-    '<p><strong>Lager:</strong> ' + item.lager + '</p><p><strong>Størrelse:</strong> ' + item.storrelse + '</p>' +
-    '<p><strong>Netto:</strong> ' + formatNumber(item.netto) + ' kg</p><p><strong>Inn dato:</strong> ' + formatDateNo(item.dato) + '</p>' +
-    '<div class="info-box warning" style="margin-top:10px;">Varen vil flyttes til <strong>Produsert</strong></div>' +
-    '<div class="btn-row"><button class="btn btn-success" onclick="confirmUt('' + item.id + '')">✅ Flytt til Produsert</button>' +
-    '<button class="btn btn-danger" onclick="$('utResult').innerHTML=''">Avbryt</button></div></div>';
+  $("utResult").innerHTML = `<div class="section" style="margin-top:15px;"><div class="section-title">Vare funnet</div>` +
+    `<p><strong>Kar:</strong> ${item.kar || "N/A"}</p><p><strong>QR:</strong> ${item.qrId || "N/A"}</p>` +
+    `<p><strong>Lager:</strong> ${item.lager}</p><p><strong>Størrelse:</strong> ${item.storrelse}</p>` +
+    `<p><strong>Netto:</strong> ${formatNumber(item.netto)} kg</p><p><strong>Inn dato:</strong> ${formatDateNo(item.dato)}</p>` +
+    `<div class="info-box warning" style="margin-top:10px;">Varen vil flyttes til <strong>Produsert</strong></div>` +
+    `<div class="btn-row"><button class="btn btn-success" onclick="confirmUt('${item.id}')">✅ Flytt til Produsert</button>` +
+    `<button class="btn btn-danger" onclick="document.getElementById('utResult').innerHTML=''">Avbryt</button></div></div>`;
 }
 
 function confirmUt(id) {
@@ -698,7 +497,7 @@ function confirmUt(id) {
   item.lager = "Produsert";
   item.utDato = new Date().toISOString();
   item.userUt = currentUser.name;
-  saveDB(); showToast("Vare flyttet til Produsert!"); queueForSync(item); $("utResult").innerHTML = "";
+  saveDB(); showToast("Vare flyttet til Produsert!"); $("utResult").innerHTML = "";
   if ($("utLagerOversikt") && $("utLagerOversikt").value) showLagerOversikt();
 }
 
@@ -707,13 +506,13 @@ function showLagerOversikt() {
   if (!lager) { $("utResult").innerHTML = ""; return; }
   const items = DB.items.filter(i => i.lager === lager);
 
-  let html = '<div class="section" style="margin-top:15px;"><div class="section-title">' + lager + ' (' + items.length + ' varer)</div>' +
-    '<table class="data-table"><thead><tr><th>Kar</th><th>QR</th><th>Størrelse</th><th>Netto</th><th>Dato</th><th>Velg</th></tr></thead><tbody>';
+  let html = `<div class="section" style="margin-top:15px;"><div class="section-title">${lager} (${items.length} varer)</div>` +
+    `<table class="data-table"><thead><tr><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Dato</th><th>Velg</th></tr></thead><tbody>`;
   items.forEach(item => {
-    html += '<tr><td>' + (item.kar || "N/A") + '</td><td>' + (item.qrId || "N/A") + '</td><td>' + item.storrelse + '</td><td>' + formatNumber(item.netto) + '</td><td>' + formatDateNo(item.dato) + '</td>' +
-      '<td><input type="checkbox" class="bulk-ut" data-id="' + item.id + '"></td></tr>';
+    html += `<tr><td>${item.kar || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${formatDateNo(item.dato)}</td>` +
+      `<td><input type="checkbox" class="bulk-ut" data-id="${item.id}"></td></tr>`;
   });
-  html += '</tbody></table><div class="btn-row" style="margin-top:10px;"><button class="btn btn-success" onclick="bulkUt()">Flytt valgte til Produsert</button></div></div>';
+  html += `</tbody></table><div class="btn-row" style="margin-top:10px;"><button class="btn btn-success" onclick="bulkUt()">Flytt valgte til Produsert</button></div></div>`;
   $("utResult").innerHTML = html;
 }
 
@@ -728,191 +527,63 @@ function bulkUt() {
   saveDB(); showToast(ids.length + " varer flyttet til Produsert!"); showLagerOversikt();
 }
 
-// ===================== QR SCANNER =====================
-let html5QrCode = null;
-
-function loadHtml5Qrcode(callback) {
-  if (typeof Html5Qrcode !== 'undefined') {
-    if (callback) callback();
-    return;
-  }
-  const script = document.createElement('script');
-  script.src = 'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
-  script.onload = function() {
-    if (callback) callback();
-  };
-  script.onerror = function() {
-    showToast('Kunne ikke laste QR-scanner. Sjekk internett.', 'error');
-  };
-  document.head.appendChild(script);
-}
-
-function startQRScanForUt() {
-  if (typeof Html5Qrcode === 'undefined') {
-    showToast("Laster QR-scanner...", "info");
-    loadHtml5Qrcode(function() {
-      startQRScanForUtImpl();
-    });
-    return;
-  }
-  startQRScanForUtImpl();
-}
-
-function startQRScanForUtImpl() {
-  const overlay = document.createElement("div"); overlay.className = "qr-overlay"; overlay.id = "qrOverlay";
-  overlay.innerHTML = '<button class="close-btn" onclick="stopQRScan()">Lukk</button>' +
-    '<div id="qrReader" style="width:300px;height:300px;margin:0 auto;border-radius:12px;overflow:hidden;"></div>' +
-    '<div class="qr-manual"><p>QR-kode leses automatisk...</p>' +
-    '<div class="form-group"><label>Eller tast inn manuelt:</label><input type="text" id="qrManualInput" placeholder="QR ID eller Kar nr"></div>' +
-    '<button class="btn btn-primary" onclick="manualQRInputForUt()">Søk</button></div>';
-  document.body.appendChild(overlay);
-
-  html5QrCode = new Html5Qrcode("qrReader");
-  html5QrCode.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: { width: 250, height: 250 } },
-    function(decodedText) {
-      stopQRScan();
-      processUt(decodedText.trim());
-    },
-    function(errorMessage) {
-      // ignore errors during scanning
-    }
-  ).catch(function(err) {
-    showToast("Kamera-feil: " + err, "error");
-  });
-}
-
-function stopQRScan() {
-  if (html5QrCode) {
-    html5QrCode.stop().then(function() {
-      html5QrCode = null;
-    }).catch(function() {
-      html5QrCode = null;
-    });
-  }
-  const overlay = $("qrOverlay"); if (overlay) overlay.remove();
-}
-
-function manualQRInputForUt() {
-  const val = $("qrManualInput").value.trim();
-  if (!val) return;
-  stopQRScan();
-  processUt(val);
-}
-
-function startQRScanForInn() {
-  if (typeof Html5Qrcode === 'undefined') {
-    showToast("Laster QR-scanner...", "info");
-    loadHtml5Qrcode(function() {
-      startQRScanForInnImpl();
-    });
-    return;
-  }
-  startQRScanForInnImpl();
-}
-
-function startQRScanForInnImpl() {
-  const overlay = document.createElement("div"); overlay.className = "qr-overlay"; overlay.id = "qrOverlay";
-  overlay.innerHTML = '<button class="close-btn" onclick="stopQRScan()">Lukk</button>' +
-    '<div id="qrReader" style="width:300px;height:300px;margin:0 auto;border-radius:12px;overflow:hidden;"></div>' +
-    '<div class="qr-manual"><p>QR-kode leses automatisk...</p>' +
-    '<div class="form-group"><label>Eller tast inn manuelt:</label><input type="text" id="qrManualInput" placeholder="QR ID (f.eks. K0001)"></div>' +
-    '<button class="btn btn-primary" onclick="manualQRInputForInn()">Bruk</button></div>';
-  document.body.appendChild(overlay);
-
-  html5QrCode = new Html5Qrcode("qrReader");
-  html5QrCode.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: { width: 250, height: 250 } },
-    function(decodedText) {
-      stopQRScan();
-      handleInnQRScan(decodedText.trim());
-    },
-    function(errorMessage) {
-      // ignore errors during scanning
-    }
-  ).catch(function(err) {
-    showToast("Kamera-feil: " + err, "error");
-  });
-}
-
-function handleInnQRScan(qrId) {
-  const qrIdTrimmed = qrId.trim();
-  if (!qrIdTrimmed) {
-    showToast("Ugyldig QR-kode", "error");
-    return;
-  }
-  switchToQRMode(qrIdTrimmed);
-  showToast("QR-kode scannet: " + qrIdTrimmed);
-}
-
-function manualQRInputForInn() {
-  const val = $("qrManualInput").value.trim();
-  if (!val) return;
-  stopQRScan();
-  handleInnQRScan(val);
-}
-
 // ===================== KONTROLL =====================
 function renderKontroll(content) {
-  content.innerHTML = '<div class="kontroll-container">' +
-    '<div class="section-title">📋 Lagerkontroll</div>' +
-    '<div class="kontroll-stats">' +
-    '<div class="kontroll-stat"><div class="val" id="kTotLager">0</div><div class="lab">Totalt kilo hele lager</div></div>' +
-    '<div class="kontroll-stat"><div class="val" id="kTotProd">0</div><div class="lab">Totalt produsert</div></div>' +
-    '<div class="kontroll-stat"><div class="val" id="kFilLager">0</div><div class="lab">Filtrert lager</div></div>' +
-    '<div class="kontroll-stat"><div class="val" id="kFilProd">0</div><div class="lab">Filtrert produsert</div></div></div>' +
-    '<div class="section" style="margin-bottom:15px;">' +
-    '<div class="kontroll-filter">' +
-    '<div class="fg"><label>Dato fra</label><input type="date" id="kFra"></div>' +
-    '<div class="fg"><label>Dato til</label><input type="date" id="kTil"></div>' +
-    '<div class="fg"><label>År</label><select id="kAr"><option value="">Alle</option></select></div>' +
-    '<div class="fg"><label>Måned</label><select id="kManed"><option value="">Alle</option><option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option><option value="4">Apr</option><option value="5">Mai</option><option value="6">Jun</option><option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option><option value="10">Okt</option><option value="11">Nov</option><option value="12">Des</option></select></div>' +
-    '<div class="fg"><label>Uke</label><select id="kUke"><option value="">Alle</option></select></div>' +
-    '<div class="fg"><label>Dag</label><select id="kDag"><option value="">Alle</option><option value="1">Man</option><option value="2">Tir</option><option value="3">Ons</option><option value="4">Tor</option><option value="5">Fre</option><option value="6">Lør</option><option value="7">Søn</option></select></div>' +
-    '<div class="fg"><label>Lager</label><select id="kLager" multiple>' + LAGRE.map(function(l) { return '<option value="' + l + '">' + l + '</option>'; }).join("") + '</select></div>' +
-    '<div class="fg"><label>Størrelse</label><select id="kStorrelse" multiple></select></div>' +
-    '<div class="fg"><label>Leverandør</label><select id="kLev" multiple>' + LEVERANDORER.map(function(l) { return '<option value="' + l + '">' + l + '</option>'; }).join("") + '</select></div>' +
-    '<div class="fg" style="justify-content:flex-end;"><button class="btn btn-primary" onclick="kontrollFilter()" style="width:100%;margin-top:auto;">🔍 Bruk filter</button></div>' +
-    '</div></div>' +
-    '<div class="section" style="margin-bottom:15px;">' +
-    '<div class="btn-row" style="justify-content:flex-end;">' +
-    '<button class="btn btn-warning" onclick="masseFlytt()" style="margin-right:8px;">📦 Masse flytting</button>' +
-    '<button class="btn btn-danger" onclick="masseSlett()">🗑️ Masse sletting</button></div></div>' +
-    '<div class="section"><div class="table-scroll-wrapper"><div class="table-wrap">' +
-    '<table class="kontroll-table"><thead><tr>' +
-    '<th><input type="checkbox" id="kSelectAll" onclick="kontrollToggleAll()"></th>' +
-    '<th>ID</th><th>QR ID</th><th>Kar nr</th><th>Dato</th><th>Lager</th><th>Leverandør</th><th>Størrelse</th>' +
-    '<th>Brutto</th><th>Tara</th><th>Netto</th><th>Ut dato</th><th>Registrert av</th><th>Handling</th></tr></thead>' +
-    '<tbody id="kTable"></tbody></table></div></div>' +
-    '<div id="kEmpty" class="empty" style="display:none">Ingen varer</div></div></div>';
+  content.innerHTML = `<div class="kontroll-container">` +
+    `<div class="section-title">📋 Lagerkontroll</div>` +
+    `<div class="kontroll-stats">` +
+    `<div class="kontroll-stat"><div class="val" id="kTotLager">0</div><div class="lab">Totalt kilo hele lager</div></div>` +
+    `<div class="kontroll-stat"><div class="val" id="kTotProd">0</div><div class="lab">Totalt produsert</div></div>` +
+    `<div class="kontroll-stat"><div class="val" id="kFilLager">0</div><div class="lab">Filtrert lager</div></div>` +
+    `<div class="kontroll-stat"><div class="val" id="kFilProd">0</div><div class="lab">Filtrert produsert</div></div></div>` +
+    `<div class="section" style="margin-bottom:15px;">` +
+    `<div class="kontroll-filter">` +
+    `<div class="fg"><label>Dato fra</label><input type="date" id="kFra"></div>` +
+    `<div class="fg"><label>Dato til</label><input type="date" id="kTil"></div>` +
+    `<div class="fg"><label>År</label><select id="kAr"><option value="">Alle</option></select></div>` +
+    `<div class="fg"><label>Måned</label><select id="kManed"><option value="">Alle</option><option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option><option value="4">Apr</option><option value="5">Mai</option><option value="6">Jun</option><option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option><option value="10">Okt</option><option value="11">Nov</option><option value="12">Des</option></select></div>` +
+    `<div class="fg"><label>Uke</label><select id="kUke"><option value="">Alle</option></select></div>` +
+    `<div class="fg"><label>Dag</label><select id="kDag"><option value="">Alle</option><option value="1">Man</option><option value="2">Tir</option><option value="3">Ons</option><option value="4">Tor</option><option value="5">Fre</option><option value="6">Lør</option><option value="7">Søn</option></select></div>` +
+    `<div class="fg"><label>Lager</label><select id="kLager" multiple>${LAGRE.map(function(l) { return `<option value="${l}">${l}</option>`; }).join("")}</select></div>` +
+    `<div class="fg"><label>Størrelse</label><select id="kStorrelse" multiple></select></div>` +
+    `<div class="fg"><label>Leverandør</label><select id="kLev" multiple>${LEVERANDORER.map(function(l) { return `<option value="${l}">${l}</option>`; }).join("")}</select></div>` +
+    `<div class="fg" style="justify-content:flex-end;"><button class="btn btn-primary" onclick="kontrollFilter()" style="width:100%;margin-top:auto;">🔍 Bruk filter</button></div>` +
+    `</div></div>` +
+    `<div class="section" style="margin-bottom:15px;">` +
+    `<div class="btn-row" style="justify-content:flex-end;">` +
+    `<button class="btn btn-warning" onclick="masseFlytt()" style="margin-right:8px;">📦 Masse flytting</button>` +
+    `<button class="btn btn-danger" onclick="masseSlett()">🗑️ Masse sletting</button></div></div>` +
+    `<div class="section"><div class="table-scroll-wrapper"><div class="table-wrap">` +
+    `<table class="kontroll-table"><thead><tr>` +
+    `<th><input type="checkbox" id="kSelectAll" onclick="kontrollToggleAll()"></th>` +
+    `<th>ID</th><th>QR ID</th><th>Kar nr</th><th>Dato</th><th>Lager</th><th>Leverandør</th><th>Størrelse</th>` +
+    `<th>Brutto</th><th>Tara</th><th>Netto</th><th>Ut dato</th><th>Registrert av</th><th>Handling</th></tr></thead>` +
+    `<tbody id="kTable"></tbody></table></div></div>` +
+    `<div id="kEmpty" class="empty" style="display:none">Ingen varer</div></div></div>`;
 
-  // Fyll uke-valg
   var ukeSel = $("kUke");
   for (var i = 1; i <= 52; i++) {
-    ukeSel.innerHTML += '<option value="' + i + '">Uke ' + i + '</option>';
+    ukeSel.innerHTML += `<option value="${i}">Uke ${i}</option>`;
   }
 
-  // Fyll størrelser
   var stSel = $("kStorrelse");
   var alleSt = new Set();
   Object.values(STORRELSER).forEach(function(arr) { arr.forEach(function(s) { alleSt.add(s); }); });
   Array.from(alleSt).sort().forEach(function(s) {
-    stSel.innerHTML += '<option value="' + s + '">' + s + '</option>';
+    stSel.innerHTML += `<option value="${s}">${s}</option>`;
   });
 
-  // Fyll år
   var arSel = $("kAr");
   var years = new Set();
   DB.items.forEach(function(i) { years.add(new Date(i.dato).getFullYear()); });
   Array.from(years).sort().reverse().forEach(function(y) {
-    arSel.innerHTML += '<option value="' + y + '">' + y + '</option>';
+    arSel.innerHTML += `<option value="${y}">${y}</option>`;
   });
 
   kontrollUpdateStats(DB.items);
   kontrollRender(DB.items);
 }
+
 function kontrollUpdateStats(items) {
   var lager = items.filter(function(i) { return i.lager !== "Produsert"; });
   var prod = items.filter(function(i) { return i.lager === "Produsert"; });
@@ -966,24 +637,24 @@ function kontrollRender(items) {
   empty.style.display = "none";
 
   tbody.innerHTML = items.map(function(i) {
-    return '<tr>' +
-      '<td><input type="checkbox" class="k-select" data-id="' + i.id + '"></td>' +
-      '<td>' + i.id + '</td>' +
-      '<td>' + (i.qrId || "") + '</td>' +
-      '<td>' + (i.kar || "") + '</td>' +
-      '<td>' + formatDateNo(i.dato) + '</td>' +
-      '<td>' + i.lager + '</td>' +
-      '<td>' + i.lev + '</td>' +
-      '<td>' + i.storrelse + '</td>' +
-      '<td>' + formatNumber(i.brutto) + '</td>' +
-      '<td>' + formatNumber(i.tara) + '</td>' +
-      '<td>' + formatNumber(i.netto) + '</td>' +
-      '<td>' + (i.utDato ? formatDateNo(i.utDato) : "") + '</td>' +
-      '<td>' + (i.userInn || "") + '</td>' +
-      '<td class="kontroll-actions">' +
-        '<button class="kontroll-edit" onclick="kontrollEdit(' + "'" + i.id + "'" + ')">✏️</button>' +
-        '<button class="kontroll-move" onclick="kontrollMove(' + "'" + i.id + "'" + ')">📦</button>' +
-        '<button class="kontroll-del" onclick="kontrollDel(' + "'" + i.id + "'" + ')">🗑️</button></td></tr>';
+    return `<tr>` +
+      `<td><input type="checkbox" class="k-select" data-id="${i.id}"></td>` +
+      `<td>${i.id}</td>` +
+      `<td>${i.qrId || ""}</td>` +
+      `<td>${i.kar || ""}</td>` +
+      `<td>${formatDateNo(i.dato)}</td>` +
+      `<td>${i.lager}</td>` +
+      `<td>${i.lev}</td>` +
+      `<td>${i.storrelse}</td>` +
+      `<td>${formatNumber(i.brutto)}</td>` +
+      `<td>${formatNumber(i.tara)}</td>` +
+      `<td>${formatNumber(i.netto)}</td>` +
+      `<td>${i.utDato ? formatDateNo(i.utDato) : ""}</td>` +
+      `<td>${i.userInn || ""}</td>` +
+      `<td class="kontroll-actions">` +
+        `<button class="kontroll-edit" onclick="kontrollEdit('${i.id}')">✏️</button>` +
+        `<button class="kontroll-move" onclick="kontrollMove('${i.id}')">📦</button>` +
+        `<button class="kontroll-del" onclick="kontrollDel('${i.id}')">🗑️</button></td></tr>`;
   }).join("");
 }
 
@@ -1004,13 +675,13 @@ function masseFlytt() {
 
   var lagerButtons = LAGRE.map(function(l, idx) {
     var style = l === "Produsert" ? "background:#0f9b6e;" : "";
-    return '<button class="btn btn-secondary" style="margin:5px;width:100%;' + style + '" onclick="bekreftMasseFlytt(&quot;' + ids.join(",") + '&quot;,' + idx + ')">' + l + '</button>';
+    return `<button class="btn btn-secondary" style="margin:5px;width:100%;${style}" onclick="bekreftMasseFlytt('${ids.join(",")}',${idx})">${l}</button>`;
   }).join("");
 
   showModal("Masse flytting - " + ids.length + " varer valgt", 
-    '<div class="form-group"><p>Velg lager å flytte til:</p></div>' +
-    '<div style="display:flex;flex-direction:column;gap:5px;">' + lagerButtons + '</div>' +
-    '<div class="btn-row" style="margin-top:15px;"><button class="btn btn-secondary" onclick="closeModal()">Avbryt</button></div>');
+    `<div class="form-group"><p>Velg lager å flytte til:</p></div>` +
+    `<div style="display:flex;flex-direction:column;gap:5px;">${lagerButtons}</div>` +
+    `<div class="btn-row" style="margin-top:15px;"><button class="btn btn-secondary" onclick="closeModal()">Avbryt</button></div>`);
 }
 
 function bekreftMasseFlytt(idsStr, idx) {
@@ -1023,7 +694,6 @@ function bekreftMasseFlytt(idsStr, idx) {
       item.lager = lager;
       if (item.lager === "Produsert") { item.utDato = new Date().toISOString(); }
       else { item.utDato = null; }
-      queueForSync(item);
     }
   });
   saveDB(); showToast(ids.length + " varer flyttet til " + lager + "!"); closeModal(); kontrollFilter();
@@ -1032,12 +702,10 @@ function bekreftMasseFlytt(idsStr, idx) {
 function masseSlett() {
   var ids = getSelectedKontrollIds();
   if (ids.length === 0) { showToast("Ingen varer valgt", "error"); return; }
-
   if (!confirm("Er du sikker på at du vil slette de markerte varene?")) return;
-
   ids.forEach(function(id) {
     var item = DB.items.find(function(i) { return i.id === id; });
-    if (item) { item.lager = "Slettet"; item.utDato = new Date().toISOString(); queueForSync(item); }
+    if (item) { item.lager = "Slettet"; item.utDato = new Date().toISOString(); }
   });
   saveDB(); showToast(ids.length + " varer flyttet til Slettet!"); closeModal(); kontrollFilter();
 }
@@ -1046,15 +714,15 @@ function kontrollEdit(id) {
   var item = DB.items.find(function(i) { return i.id === id; });
   if (!item) return;
   showModal("Rediger vare", 
-    '<div class="form-group"><label>Kar nr</label><input type="text" id="kEditKar" value="' + (item.kar || "") + '"></div>' +
-    '<div class="form-group"><label>Lager</label><select id="kEditLager">' + LAGRE.map(function(l) { return '<option ' + (l === item.lager ? 'selected' : '') + '>' + l + '</option>'; }).join("") + '</select></div>' +
-    '<div class="form-group"><label>Leverandør</label><select id="kEditLev">' + LEVERANDORER.map(function(l) { return '<option ' + (l === item.lev ? 'selected' : '') + '>' + l + '</option>'; }).join("") + '</select></div>' +
-    '<div class="form-group"><label>Størrelse</label><input type="text" id="kEditStorrelse" value="' + item.storrelse + '"></div>' +
-    '<div class="form-row"><div class="form-group"><label>Brutto</label><input type="text" id="kEditBrutto" value="' + formatNumber(item.brutto) + '"></div>' +
-    '<div class="form-group"><label>Tara</label><input type="text" id="kEditTara" value="' + formatNumber(item.tara) + '"></div></div>' +
-    '<div class="form-group"><label>Netto</label><input type="text" id="kEditNetto" value="' + formatNumber(item.netto) + '" readonly></div>' +
-    '<div class="btn-row"><button class="btn btn-success" onclick="kontrollSaveEdit(' + "'" + id + "'" + ')">💾 Lagre</button>' +
-    '<button class="btn btn-secondary" onclick="closeModal()">Avbryt</button></div>');
+    `<div class="form-group"><label>Kar nr</label><input type="text" id="kEditKar" value="${item.kar || ""}"></div>` +
+    `<div class="form-group"><label>Lager</label><select id="kEditLager">${LAGRE.map(function(l) { return `<option ${l === item.lager ? 'selected' : ''}>${l}</option>`; }).join("")}</select></div>` +
+    `<div class="form-group"><label>Leverandør</label><select id="kEditLev">${LEVERANDORER.map(function(l) { return `<option ${l === item.lev ? 'selected' : ''}>${l}</option>`; }).join("")}</select></div>` +
+    `<div class="form-group"><label>Størrelse</label><input type="text" id="kEditStorrelse" value="${item.storrelse}"></div>` +
+    `<div class="form-row"><div class="form-group"><label>Brutto</label><input type="text" id="kEditBrutto" value="${formatNumber(item.brutto)}"></div>` +
+    `<div class="form-group"><label>Tara</label><input type="text" id="kEditTara" value="${formatNumber(item.tara)}"></div></div>` +
+    `<div class="form-group"><label>Netto</label><input type="text" id="kEditNetto" value="${formatNumber(item.netto)}" readonly></div>` +
+    `<div class="btn-row"><button class="btn btn-success" onclick="kontrollSaveEdit('${id}')">💾 Lagre</button>` +
+    `<button class="btn btn-secondary" onclick="closeModal()">Avbryt</button></div>`);
 }
 
 function kontrollSaveEdit(id) {
@@ -1076,13 +744,13 @@ function kontrollMove(id) {
 
   var lagerButtons = LAGRE.map(function(l, idx) {
     var style = l === "Produsert" ? "background:#0f9b6e;" : "";
-    return '<button class="btn btn-secondary" style="margin:5px;width:100%;' + style + '" onclick="executeMove(&quot;' + id + '&quot;,' + idx + ')">' + l + '</button>';
+    return `<button class="btn btn-secondary" style="margin:5px;width:100%;${style}" onclick="executeMove('${id}',${idx})">${l}</button>`;
   }).join("");
 
   showModal("Velg lager du vil flytte pallen til:", 
-    '<div class="form-group"><p><strong>Kar:</strong> ' + (item.kar || "N/A") + '</p><p><strong>Nåværende lager:</strong> ' + item.lager + '</p></div>' +
-    '<div style="display:flex;flex-direction:column;gap:5px;">' + lagerButtons + '</div>' +
-    '<div class="btn-row" style="margin-top:15px;"><button class="btn btn-secondary" onclick="closeModal()">Avbryt</button></div>');
+    `<div class="form-group"><p><strong>Kar:</strong> ${item.kar || "N/A"}</p><p><strong>Nåværende lager:</strong> ${item.lager}</p></div>` +
+    `<div style="display:flex;flex-direction:column;gap:5px;">${lagerButtons}</div>` +
+    `<div class="btn-row" style="margin-top:15px;"><button class="btn btn-secondary" onclick="closeModal()">Avbryt</button></div>`);
 }
 
 function executeMove(id, idx) {
@@ -1102,17 +770,17 @@ function kontrollDel(id) {
   saveDB(); showToast("Slettet!"); kontrollFilter();
 }
 
-// ===================== KORRIGERING - dd.mm.åå format =====================
+// ===================== KORRIGERING =====================
 function renderKorr(content) {
-  content.innerHTML = '<div class="section"><div class="section-title">📝 Korreksjon</div>' +
-    '<div class="form-row"><div class="form-group"><label>Dato fra</label><input type="date" id="korrFra"></div>' +
-    '<div class="form-group"><label>Dato til</label><input type="date" id="korrTil"></div></div>' +
-    '<div class="form-row"><div class="form-group"><label>Lager</label><select id="korrLager"><option value="">Alle</option>' + LAGRE.filter(l => l !== "Slettet").map(l => '<option value="' + l + '">' + l + '</option>').join("") + '</select></div>' +
-    '<div class="form-group"><label>Størrelse</label><select id="korrStorrelse"><option value="">Alle</option></select></div></div>' +
-    '<div class="form-group"><label>Leverandør</label><select id="korrLev"><option value="">Alle</option>' + LEVERANDORER.map(l => '<option value="' + l + '">' + l + '</option>').join("") + '</select></div>' +
-    '<div class="checkbox-row"><input type="checkbox" id="korrVisProd"><label for="korrVisProd">Vis produserte varer</label></div>' +
-    '<div class="btn-row"><button class="btn btn-primary" onclick="filterKorr()">🔍 Søk</button><button class="btn btn-secondary" onclick="clearKorrFilter()">Nullstill</button></div></div>' +
-    '<div id="korrResult"></div>';
+  content.innerHTML = `<div class="section"><div class="section-title">📝 Korreksjon</div>` +
+    `<div class="form-row"><div class="form-group"><label>Dato fra</label><input type="date" id="korrFra"></div>` +
+    `<div class="form-group"><label>Dato til</label><input type="date" id="korrTil"></div></div>` +
+    `<div class="form-row"><div class="form-group"><label>Lager</label><select id="korrLager"><option value="">Alle</option>${LAGRE.filter(l => l !== "Slettet").map(l => `<option value="${l}">${l}</option>`).join("")}</select></div>` +
+    `<div class="form-group"><label>Størrelse</label><select id="korrStorrelse"><option value="">Alle</option></select></div></div>` +
+    `<div class="form-group"><label>Leverandør</label><select id="korrLev"><option value="">Alle</option>${LEVERANDORER.map(l => `<option value="${l}">${l}</option>`).join("")}</select></div>` +
+    `<div class="checkbox-row"><input type="checkbox" id="korrVisProd"><label for="korrVisProd">Vis produserte varer</label></div>` +
+    `<div class="btn-row"><button class="btn btn-primary" onclick="filterKorr()">🔍 Søk</button><button class="btn btn-secondary" onclick="clearKorrFilter()">Nullstill</button></div></div>` +
+    `<div id="korrResult"></div>`;
 }
 
 function filterKorr() {
@@ -1136,13 +804,13 @@ function filterKorr() {
 
   let totalNetto = items.reduce((sum, i) => sum + i.netto, 0);
 
-  let html = '<div class="section"><div class="section-title">Resultater (' + items.length + ') <span style="margin-left:auto;color:#00d4ff;">' + formatNumber(totalNetto) + ' kg totalt</span></div>' +
-    '<table class="data-table"><thead><tr><th>Dato</th><th>Lager</th><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Handling</th></tr></thead><tbody>';
+  let html = `<div class="section"><div class="section-title">Resultater (${items.length}) <span style="margin-left:auto;color:#00d4ff;">${formatNumber(totalNetto)} kg totalt</span></div>` +
+    `<table class="data-table"><thead><tr><th>Dato</th><th>Lager</th><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Handling</th></tr></thead><tbody>`;
   items.forEach(item => {
-    html += '<tr><td>' + formatDateNo(item.dato) + '</td><td>' + item.lager + '</td><td>' + (item.kar || "N/A") + '</td><td>' + item.storrelse + '</td><td>' + formatNumber(item.netto) + '</td>' +
-      '<td class="actions"><button class="edit-btn" onclick="editItem(\'' + item.id + '\')">✏️</button><button class="del-btn" onclick="deleteItem(\'' + item.id + '\')">🗑️</button></td></tr>';
+    html += `<tr><td>${formatDateNo(item.dato)}</td><td>${item.lager}</td><td>${item.kar || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td>` +
+      `<td class="actions"><button class="edit-btn" onclick="editItem('${item.id}')">✏️</button><button class="del-btn" onclick="deleteItem('${item.id}')">🗑️</button></td></tr>`;
   });
-  html += '</tbody></table></div>';
+  html += `</tbody></table></div>`;
   $("korrResult").innerHTML = html;
 }
 
@@ -1157,15 +825,15 @@ function editItem(id) {
   if (!item) return; editingItem = item;
 
   showModal("Rediger vare", 
-    '<div class="form-group"><label>Dato</label><input type="datetime-local" id="editDato" value="' + item.dato.slice(0, 16) + '"></div>' +
-    '<div class="form-group"><label>Lager</label><select id="editLager">' + LAGRE.map(l => '<option value="' + l + '" ' + (l===item.lager?'selected':'') + '>' + l + '</option>').join("") + '</select></div>' +
-    '<div class="form-group"><label>Leverandør</label><select id="editLev">' + LEVERANDORER.map(l => '<option value="' + l + '" ' + (l===item.lev?'selected':'') + '>' + l + '</option>').join("") + '</select></div>' +
-    '<div class="form-group"><label>Størrelse</label><input type="text" id="editStorrelse" value="' + item.storrelse + '"></div>' +
-    '<div class="form-group"><label>Kar nr</label><input type="text" id="editKar" value="' + (item.kar || '') + '"></div>' +
-    '<div class="form-row"><div class="form-group"><label>Brutto</label><input type="text" id="editBrutto" value="' + formatNumber(item.brutto) + '"></div>' +
-    '<div class="form-group"><label>Tara</label><input type="text" id="editTara" value="' + formatNumber(item.tara) + '"></div></div>' +
-    '<div class="form-group"><label>Netto</label><input type="text" id="editNetto" value="' + formatNumber(item.netto) + '" readonly></div>' +
-    '<div class="btn-row"><button class="btn btn-success" onclick="saveEdit()">Lagre</button><button class="btn btn-secondary" onclick="closeModal()">Avbryt</button></div>');
+    `<div class="form-group"><label>Dato</label><input type="datetime-local" id="editDato" value="${item.dato.slice(0, 16)}"></div>` +
+    `<div class="form-group"><label>Lager</label><select id="editLager">${LAGRE.map(l => `<option value="${l}" ${l===item.lager?'selected':''}>${l}</option>`).join("")}</select></div>` +
+    `<div class="form-group"><label>Leverandør</label><select id="editLev">${LEVERANDORER.map(l => `<option value="${l}" ${l===item.lev?'selected':''}>${l}</option>`).join("")}</select></div>` +
+    `<div class="form-group"><label>Størrelse</label><input type="text" id="editStorrelse" value="${item.storrelse}"></div>` +
+    `<div class="form-group"><label>Kar nr</label><input type="text" id="editKar" value="${item.kar || ''}"></div>` +
+    `<div class="form-row"><div class="form-group"><label>Brutto</label><input type="text" id="editBrutto" value="${formatNumber(item.brutto)}"></div>` +
+    `<div class="form-group"><label>Tara</label><input type="text" id="editTara" value="${formatNumber(item.tara)}"></div></div>` +
+    `<div class="form-group"><label>Netto</label><input type="text" id="editNetto" value="${formatNumber(item.netto)}" readonly></div>` +
+    `<div class="btn-row"><button class="btn btn-success" onclick="saveEdit()">Lagre</button><button class="btn btn-secondary" onclick="closeModal()">Avbryt</button></div>`);
 }
 
 function saveEdit() {
@@ -1190,16 +858,16 @@ function deleteItem(id) {
 
 // ===================== RAPPORTER =====================
 function renderRap(content) {
-  content.innerHTML = '<div class="section"><div class="section-title">📊 Rapporter</div>' +
-    '<div class="btn-row" style="margin-bottom:8px;">' +
-    '<button class="btn ' + (currentRapSubTab === "total" ? "btn-primary" : "btn-secondary") + '" onclick="switchRapTab(&quot;total&quot;)">Total lager</button>' +
-    '<button class="btn ' + (currentRapSubTab === "lev" ? "btn-primary" : "btn-secondary") + '" onclick="switchRapTab(&quot;lev&quot;)">Per leverandør</button>' +
-    '<button class="btn ' + (currentRapSubTab === "prod" ? "btn-primary" : "btn-secondary") + '" onclick="switchRapTab(&quot;prod&quot;)">Produksjon</button></div>' +
-    '<div class="btn-row" style="margin-bottom:15px;">' +
-    '<button class="btn ' + (currentRapSubTab === "salgs" ? "btn-primary" : "btn-secondary") + '" onclick="switchRapTab(&quot;salgs&quot;)">Salgsrap.</button>' +
-    '<button class="btn ' + (currentRapSubTab === "levpak" ? "btn-primary" : "btn-secondary") + '" onclick="switchRapTab(&quot;levpak&quot;)">Levendepakking</button>' +
-    '<button class="btn btn-secondary" style="opacity:0.3;cursor:default;" onclick="">(ledig)</button></div>' +
-    '<div id="rapContent"></div></div>';
+  content.innerHTML = `<div class="section"><div class="section-title">📊 Rapporter</div>` +
+    `<div class="btn-row" style="margin-bottom:8px;">` +
+    `<button class="btn ${currentRapSubTab === "total" ? "btn-primary" : "btn-secondary"}" onclick="switchRapTab('total')">Total lager</button>` +
+    `<button class="btn ${currentRapSubTab === "lev" ? "btn-primary" : "btn-secondary"}" onclick="switchRapTab('lev')">Per leverandør</button>` +
+    `<button class="btn ${currentRapSubTab === "prod" ? "btn-primary" : "btn-secondary"}" onclick="switchRapTab('prod')">Produksjon</button></div>` +
+    `<div class="btn-row" style="margin-bottom:15px;">` +
+    `<button class="btn ${currentRapSubTab === "salgs" ? "btn-primary" : "btn-secondary"}" onclick="switchRapTab('salgs')">Salgsrap.</button>` +
+    `<button class="btn ${currentRapSubTab === "levpak" ? "btn-primary" : "btn-secondary"}" onclick="switchRapTab('levpak')">Levendepakking</button>` +
+    `<button class="btn btn-secondary" style="opacity:0.3;cursor:default;" onclick="">(ledig)</button></div>` +
+    `<div id="rapContent"></div></div>`;
 
   if (currentRapSubTab === "total") showRapTotal();
   else if (currentRapSubTab === "lev") showRapLev();
@@ -1207,193 +875,6 @@ function renderRap(content) {
   else if (currentRapSubTab === "salgs") showRapSalgs();
   else if (currentRapSubTab === "levpak") showRapLevpak();
 }
-
-function showRapSalgs() {
-  var today = formatDate(new Date());
-  var lagerOptions = LAGRE.filter(function(l) { return l !== "Produsert"; }).map(function(l) {
-    return '<option value="' + l + '"' + (l === "Sortert" ? ' selected' : '') + '>' + l + '</option>';
-  }).join("");
-
-  $("rapContent").innerHTML = '<div class="section">' +
-    '<div class="form-row no-print" style="margin-bottom:10px;">' +
-    '<div class="form-group"><label>Dato fra</label><input type="date" id="salgsFra" value="' + today + '"></div>' +
-    '<div class="form-group"><label>Dato til</label><input type="date" id="salgsTil" value="' + today + '"></div></div>' +
-    '<div class="form-group no-print" style="margin-bottom:10px;"><label>Lager (velg en eller flere)</label>' +
-    '<select id="salgsLager" multiple size="3">' + lagerOptions + '</select></div>' +
-    '<div class="section-title">Salgsrapport</div>' +
-    '<div class="btn-row no-print" style="margin-bottom:15px;"><button class="btn btn-primary" onclick="generateRapSalgs()">Generer</button>' +
-    '<button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>' +
-    '<button class="btn btn-secondary" onclick="exportPDF()">📄 PDF</button></div>' +
-    '<div id="salgsResult"></div></div>';
-}
-
-function generateRapSalgs() {
-  var fra = $("salgsFra").value;
-  var til = $("salgsTil").value;
-  var selectedLager = Array.from($("salgsLager").selectedOptions).map(function(o) { return o.value; });
-  if (selectedLager.length === 0) { showToast("Velg minst ett lager", "error"); return; }
-
-  var items = DB.items.filter(function(i) {
-    if (i.lager === "Slettet") return false;
-    if (selectedLager.indexOf(i.lager) === -1) return false;
-    var d = new Date(i.dato);
-    if (fra && d < new Date(fra)) return false;
-    if (til && d > new Date(til + "T23:59:59")) return false;
-    return true;
-  });
-
-  // Grupper etter leverandør -> størrelse (summer størrelser)
-  var levGroups = {};
-  var total = 0;
-  items.forEach(function(i) {
-    total += i.netto;
-    if (!levGroups[i.lev]) levGroups[i.lev] = { sizes: {}, sum: 0 };
-    if (!levGroups[i.lev].sizes[i.storrelse]) {
-      levGroups[i.lev].sizes[i.storrelse] = { netto: 0, count: 0, dognSum: 0 };
-    }
-    levGroups[i.lev].sizes[i.storrelse].netto += i.netto;
-    levGroups[i.lev].sizes[i.storrelse].count += 1;
-    levGroups[i.lev].sizes[i.storrelse].dognSum += daysBetween(i.dato, new Date());
-    levGroups[i.lev].sum += i.netto;
-  });
-
-  // Sorter leverandører etter sum (descending)
-  var levArray = [];
-  for (var lev in levGroups) { levArray.push({ lev: lev, data: levGroups[lev] }); }
-  levArray.sort(function(a, b) { return b.data.sum - a.data.sum; });
-
-  // === SUM PR. LEVERANDØR ØVERST ===
-  var html = '<div class="section" style="margin-bottom:15px;"><div class="section-title">Sum pr. leverandør</div>';
-  levArray.forEach(function(l) {
-    html += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #0f3460;"><span>' + l.lev + '</span><span style="color:#00d4ff;font-weight:600;">' + formatNumber(l.data.sum) + ' kg</span></div>';
-  });
-  html += '<div style="display:flex;justify-content:space-between;padding:6px 0;margin-top:5px;border-top:2px solid #00d4ff;"><span style="font-weight:700;">TOTALT</span><span style="color:#00d4ff;font-weight:700;">' + formatNumber(total) + ' kg</span></div></div>';
-
-  // === DETALJER PER LEVERANDØR - SUMMERT ETTER STØRRELSE ===
-  levArray.forEach(function(l) {
-    html += '<div class="section" style="margin-top:15px;"><div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0f3460;padding-bottom:5px;margin-bottom:8px;">' +
-      '<span style="font-weight:700;font-size:1rem;">' + l.lev + '</span>' +
-      '<span style="color:#00d4ff;font-weight:700;">' + formatNumber(l.data.sum) + ' kg</span></div>' +
-      '<table class="data-table"><thead><tr><th>Størrelse</th><th>Fordeling %</th><th>Netto</th><th>Snitt Døgn</th><th>Lager</th></tr></thead><tbody>';
-
-    // Gå gjennom summerte størrelser for denne leverandøren
-    for (var size in l.data.sizes) {
-      var sizeData = l.data.sizes[size];
-      var pct = l.data.sum > 0 ? ((sizeData.netto / l.data.sum) * 100).toFixed(0) : 0;
-      var snittDogn = sizeData.count > 0 ? (sizeData.dognSum / sizeData.count).toFixed(1) : 0;
-      html += '<tr><td>' + size + '</td><td>' + pct + ' %</td><td>' + formatNumber(sizeData.netto) + '</td><td>' + snittDogn + '</td><td>' + selectedLager.join(", ") + '</td></tr>';
-    }
-    html += '</tbody></table></div>';
-  });
-
-  $("salgsResult").innerHTML = html;
-}
-
-// ===================== LEVENDEPAKKING =====================
-function showRapLevpak() {
-  var today = formatDate(new Date());
-  var lagerOptions = LAGRE.filter(function(l) { return l !== "Produsert"; }).map(function(l) {
-    return '<option value="' + l + '"' + (l === "Sortert" ? ' selected' : '') + '>' + l + '</option>';
-  }).join("");
-
-  $("rapContent").innerHTML = '<div class="section">' +
-    '<div class="form-row no-print" style="margin-bottom:10px;">' +
-    '<div class="form-group"><label>Dato fra</label><input type="date" id="levpakFra" value="' + today + '"></div>' +
-    '<div class="form-group"><label>Dato til</label><input type="date" id="levpakTil" value="' + today + '"></div></div>' +
-    '<div class="form-group no-print" style="margin-bottom:10px;"><label>Lager (velg en eller flere)</label>' +
-    '<select id="levpakLager" multiple size="3">' + lagerOptions + '</select></div>' +
-    '<div class="section-title">Rapport, hele lageret.</div>' +
-    '<div style="color:#00d4ff;font-size:0.9rem;margin-bottom:10px;">Sum pr. leverandør samlet på størrelser</div>' +
-    '<div class="btn-row no-print" style="margin-bottom:15px;"><button class="btn btn-primary" onclick="generateRapLevpak()">Generer</button>' +
-    '<button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>' +
-    '<button class="btn btn-secondary" onclick="exportPDF()">📄 PDF</button></div>' +
-    '<div id="levpakResult"></div></div>';
-}
-
-function generateRapLevpak() {
-  var fra = $("levpakFra").value;
-  var til = $("levpakTil").value;
-  var selectedLager = Array.from($("levpakLager").selectedOptions).map(function(o) { return o.value; });
-  if (selectedLager.length === 0) { showToast("Velg minst ett lager", "error"); return; }
-
-  var items = DB.items.filter(function(i) {
-    if (i.lager === "Slettet") return false;
-    if (selectedLager.indexOf(i.lager) === -1) return false;
-    var d = new Date(i.dato);
-    if (fra && d < new Date(fra)) return false;
-    if (til && d > new Date(til + "T23:59:59")) return false;
-    return true;
-  });
-
-  // Grupper etter leverandør -> størrelse (summer størrelser)
-  var levGroups = {};
-  var totalNetto = 0;
-  var totalBox = 0;
-  items.forEach(function(i) {
-    totalNetto += i.netto;
-    if (!levGroups[i.lev]) levGroups[i.lev] = { sizes: {}, sum: 0, boxSum: 0 };
-    if (!levGroups[i.lev].sizes[i.storrelse]) {
-      levGroups[i.lev].sizes[i.storrelse] = { netto: 0, count: 0, dognSum: 0, box: 0 };
-    }
-    levGroups[i.lev].sizes[i.storrelse].netto += i.netto;
-    levGroups[i.lev].sizes[i.storrelse].count += 1;
-    levGroups[i.lev].sizes[i.storrelse].dognSum += daysBetween(i.dato, new Date());
-    levGroups[i.lev].sum += i.netto;
-  });
-
-  // Beregn box for hver størrelse (avrund ALLTID ned)
-  for (var lev in levGroups) {
-    for (var size in levGroups[lev].sizes) {
-      var kgBox = KG_I_BOX[selectedLager[0] + "_" + size] || KG_I_BOX["Sortert_" + size] || KG_I_BOX["Kjøpslager_" + size] || "";
-      if (kgBox) {
-        var kgBoxNum = parseFloat(kgBox.replace(",", "."));
-        if (kgBoxNum > 0) {
-          var boxCount = Math.floor(levGroups[lev].sizes[size].netto / kgBoxNum);
-          levGroups[lev].sizes[size].box = boxCount;
-          levGroups[lev].boxSum += boxCount;
-          totalBox += boxCount;
-        }
-      }
-    }
-  }
-
-  // Sorter leverandører etter sum (descending)
-  var levArray = [];
-  for (var lev in levGroups) { levArray.push({ lev: lev, data: levGroups[lev] }); }
-  levArray.sort(function(a, b) { return b.data.sum - a.data.sum; });
-
-  // === TOTAL ØVERST ===
-  var html = '<div class="section" style="margin-bottom:15px;">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:2px solid #00d4ff;">' +
-    '<span style="font-weight:700;font-size:1.1rem;">TOTAL</span>' +
-    '<span style="color:#00d4ff;font-weight:700;">' + totalBox + ' box</span>' +
-    '<span style="color:#00d4ff;font-weight:700;">' + formatNumber(totalNetto) + ' kg</span></div></div>';
-
-  // === PALLELISTE ===
-  html += '<div style="margin-bottom:10px;font-size:0.9rem;">Palleliste (' + items.length + ' registreringer)</div>';
-
-  // === DETALJER PER LEVERANDØR ===
-  levArray.forEach(function(l) {
-    html += '<div class="section" style="margin-top:15px;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0f3460;padding-bottom:5px;margin-bottom:8px;">' +
-      '<span style="font-weight:700;font-size:1rem;">' + l.lev + '</span>' +
-      '<span style="color:#00d4ff;font-weight:700;">' + l.data.boxSum + ' box</span>' +
-      '<span style="color:#00d4ff;font-weight:700;">' + formatNumber(l.data.sum) + ' kg</span></div>' +
-      '<table class="data-table"><thead><tr><th>Kar</th><th>Størrelse</th><th>Fordeling %</th><th>Netto</th><th>Ant. Box</th><th>Leverandør</th><th>Snitt Døgn</th><th>Lager</th></tr></thead><tbody>';
-
-    for (var size in l.data.sizes) {
-      var sizeData = l.data.sizes[size];
-      var pct = l.data.sum > 0 ? ((sizeData.netto / l.data.sum) * 100).toFixed(0) : 0;
-      var snittDogn = sizeData.count > 0 ? (sizeData.dognSum / sizeData.count).toFixed(1) : 0;
-      var boxStr = sizeData.box > 0 ? sizeData.box.toString() : "0";
-      html += '<tr><td></td><td>' + size + '</td><td>' + pct + ' %</td><td>' + formatNumber(sizeData.netto) + '</td><td>' + boxStr + '</td><td>' + l.lev + '</td><td>' + snittDogn + '</td><td>' + selectedLager.join(", ") + '</td></tr>';
-    }
-    html += '</tbody></table></div>';
-  });
-
-  $("levpakResult").innerHTML = html;
-}
-
 
 function switchRapTab(tab) {
   currentRapSubTab = tab;
@@ -1408,7 +889,6 @@ function showRapTotal() {
     levSum[item.lev] = (levSum[item.lev] || 0) + item.netto;
   });
 
-  // Tell unike kar-numre (uten Set)
   var uniqueKar = {};
   var unikeCount = 0;
   items.forEach(function(i) {
@@ -1419,40 +899,38 @@ function showRapTotal() {
     }
   });
 
-  // Sorter leverandører etter sum (descending)
   var levArray = [];
   for (var lev in levSum) { levArray.push({ lev: lev, sum: levSum[lev] }); }
   levArray.sort(function(a, b) { return b.sum - a.sum; });
 
-  var html = '<div class="section"><div class="section-title">Sum pr. leverandør</div>';
+  var html = `<div class="section"><div class="section-title">Sum pr. leverandør</div>`;
   levArray.forEach(function(l) {
-    html += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #0f3460;"><span>' + l.lev + '</span><span style="color:#00d4ff;font-weight:600;">' + formatNumber(l.sum) + ' kg</span></div>';
+    html += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #0f3460;"><span>${l.lev}</span><span style="color:#00d4ff;font-weight:600;">${formatNumber(l.sum)} kg</span></div>`;
   });
-  html += '<div style="display:flex;justify-content:space-between;padding:6px 0;margin-top:5px;border-top:2px solid #00d4ff;"><span style="font-weight:700;">TOTALT</span><span style="color:#00d4ff;font-weight:700;">' + formatNumber(totalNetto) + ' kg</span></div></div>';
+  html += `<div style="display:flex;justify-content:space-between;padding:6px 0;margin-top:5px;border-top:2px solid #00d4ff;"><span style="font-weight:700;">TOTALT</span><span style="color:#00d4ff;font-weight:700;">${formatNumber(totalNetto)} kg</span></div></div>`;
 
-  html += '<div class="section" style="margin-top:15px;"><div class="section-title">Palleliste (' + items.length + ' registreringer, ' + unikeCount + ' unike)</div>' +
-    '<div class="btn-row no-print" style="margin-bottom:10px;"><button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button><button class="btn btn-secondary" onclick="exportPDF()">📄 PDF</button></div>' +
-    '<table class="data-table"><thead><tr><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th><th>Dato</th><th>Døgn</th><th>Lager</th></tr></thead><tbody>';
+  html += `<div class="section" style="margin-top:15px;"><div class="section-title">Palleliste (${items.length} registreringer, ${unikeCount} unike)</div>` +
+    `<div class="btn-row no-print" style="margin-bottom:10px;"><button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button><button class="btn btn-secondary" onclick="exportPDF()">📄 PDF</button></div>` +
+    `<table class="data-table"><thead><tr><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th><th>Dato</th><th>Døgn</th><th>Lager</th></tr></thead><tbody>`;
   items.forEach(function(item) {
     var dogn = daysBetween(item.dato, new Date());
-    html += '<tr><td>' + (item.kar || "N/A") + '</td><td>' + item.storrelse + '</td><td>' + formatNumber(item.netto) + '</td><td>' + item.lev + '</td><td>' + formatDateNo(item.dato) + '</td><td>' + dogn + '</td><td>' + item.lager + '</td></tr>';
+    html += `<tr><td>${item.kar || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td><td>${formatDateNo(item.dato)}</td><td>${dogn}</td><td>${item.lager}</td></tr>`;
   });
-  html += '</tbody></table></div>';
+  html += `</tbody></table></div>`;
   $("rapContent").innerHTML = html;
 }
 
-// Per leverandør - med dato-filter
 function showRapLev() {
   var today = formatDate(new Date());
-  $("rapContent").innerHTML = '<div class="section">' +
-    '<div class="form-row no-print" style="margin-bottom:10px;">' +
-    '<div class="form-group"><label>Dato fra</label><input type="date" id="rapLevFra" value="' + today + '"></div>' +
-    '<div class="form-group"><label>Dato til</label><input type="date" id="rapLevTil" value="' + today + '"></div></div>' +
-    '<div class="section-title">Per leverandør</div>' +
-    '<div class="btn-row no-print" style="margin-bottom:15px;"><button class="btn btn-primary" onclick="generateRapLev()">Generer</button>' +
-    '<button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>' +
-    '<button class="btn btn-secondary" onclick="exportPDF()">📄 PDF</button></div>' +
-    '<div id="rapLevResult"></div></div>';
+  $("rapContent").innerHTML = `<div class="section">` +
+    `<div class="form-row no-print" style="margin-bottom:10px;">` +
+    `<div class="form-group"><label>Dato fra</label><input type="date" id="rapLevFra" value="${today}"></div>` +
+    `<div class="form-group"><label>Dato til</label><input type="date" id="rapLevTil" value="${today}"></div></div>` +
+    `<div class="section-title">Per leverandør</div>` +
+    `<div class="btn-row no-print" style="margin-bottom:15px;"><button class="btn btn-primary" onclick="generateRapLev()">Generer</button>` +
+    `<button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>` +
+    `<button class="btn btn-secondary" onclick="exportPDF()">📄 PDF</button></div>` +
+    `<div id="rapLevResult"></div></div>`;
 }
 
 function generateRapLev() {
@@ -1467,7 +945,6 @@ function generateRapLev() {
     return true;
   });
 
-  // Grupper etter leverandør
   var levGroups = {};
   var total = 0;
   items.forEach(function(i) {
@@ -1477,29 +954,26 @@ function generateRapLev() {
     levGroups[i.lev].sum += i.netto;
   });
 
-  // Sorter leverandører etter sum (descending)
   var levArray = [];
   for (var lev in levGroups) { levArray.push({ lev: lev, data: levGroups[lev] }); }
   levArray.sort(function(a, b) { return b.data.sum - a.data.sum; });
 
-  // === SUM PR. LEVERANDØR ØVERST ===
-  var html = '<div class="section" style="margin-bottom:15px;"><div class="section-title">Sum pr. leverandør</div>';
+  var html = `<div class="section" style="margin-bottom:15px;"><div class="section-title">Sum pr. leverandør</div>`;
   levArray.forEach(function(l) {
-    html += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #0f3460;"><span>' + l.lev + '</span><span style="color:#00d4ff;font-weight:600;">' + formatNumber(l.data.sum) + ' kg</span></div>';
+    html += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #0f3460;"><span>${l.lev}</span><span style="color:#00d4ff;font-weight:600;">${formatNumber(l.data.sum)} kg</span></div>`;
   });
-  html += '<div style="display:flex;justify-content:space-between;padding:6px 0;margin-top:5px;border-top:2px solid #00d4ff;"><span style="font-weight:700;">TOTALT</span><span style="color:#00d4ff;font-weight:700;">' + formatNumber(total) + ' kg</span></div></div>';
+  html += `<div style="display:flex;justify-content:space-between;padding:6px 0;margin-top:5px;border-top:2px solid #00d4ff;"><span style="font-weight:700;">TOTALT</span><span style="color:#00d4ff;font-weight:700;">${formatNumber(total)} kg</span></div></div>`;
 
-  // === PALLELISTE PER LEVERANDØR ===
   levArray.forEach(function(l) {
-    html += '<div class="section" style="margin-top:15px;"><div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0f3460;padding-bottom:5px;margin-bottom:8px;">' +
-      '<span style="font-weight:700;font-size:1rem;">' + l.lev + '</span>' +
-      '<span style="color:#00d4ff;font-weight:700;">' + formatNumber(l.data.sum) + ' kg</span></div>' +
-      '<table class="data-table"><thead><tr><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th><th>Dato</th><th>Døgn</th><th>Lager</th></tr></thead><tbody>';
+    html += `<div class="section" style="margin-top:15px;"><div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0f3460;padding-bottom:5px;margin-bottom:8px;">` +
+      `<span style="font-weight:700;font-size:1rem;">${l.lev}</span>` +
+      `<span style="color:#00d4ff;font-weight:700;">${formatNumber(l.data.sum)} kg</span></div>` +
+      `<table class="data-table"><thead><tr><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th><th>Dato</th><th>Døgn</th><th>Lager</th></tr></thead><tbody>`;
     l.data.items.forEach(function(item) {
       var dogn = daysBetween(item.dato, new Date());
-      html += '<tr><td>' + (item.kar || "N/A") + '</td><td>' + item.storrelse + '</td><td>' + formatNumber(item.netto) + '</td><td>' + item.lev + '</td><td>' + formatDateNo(item.dato) + '</td><td>' + dogn + '</td><td>' + item.lager + '</td></tr>';
+      html += `<tr><td>${item.kar || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td><td>${formatDateNo(item.dato)}</td><td>${dogn}</td><td>${item.lager}</td></tr>`;
     });
-    html += '</tbody></table></div>';
+    html += `</tbody></table></div>`;
   });
 
   $("rapLevResult").innerHTML = html;
@@ -1507,15 +981,15 @@ function generateRapLev() {
 
 function showRapProd() {
   var today = formatDate(new Date());
-  $("rapContent").innerHTML = '<div class="section">' +
-    '<div class="form-row no-print" style="margin-bottom:10px;">' +
-    '<div class="form-group"><label>Dato fra</label><input type="date" id="prodFra" value="' + today + '"></div>' +
-    '<div class="form-group"><label>Dato til</label><input type="date" id="prodTil" value="' + today + '"></div></div>' +
-    '<div class="section-title">Produksjonsrapport</div>' +
-    '<div class="btn-row no-print" style="margin-bottom:15px;"><button class="btn btn-primary" onclick="generateRapProd()">Generer</button>' +
-    '<button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>' +
-    '<button class="btn btn-secondary" onclick="exportPDF()">📄 PDF</button></div>' +
-    '<div id="rapProdResult"></div></div>';
+  $("rapContent").innerHTML = `<div class="section">` +
+    `<div class="form-row no-print" style="margin-bottom:10px;">` +
+    `<div class="form-group"><label>Dato fra</label><input type="date" id="prodFra" value="${today}"></div>` +
+    `<div class="form-group"><label>Dato til</label><input type="date" id="prodTil" value="${today}"></div></div>` +
+    `<div class="section-title">Produksjonsrapport</div>` +
+    `<div class="btn-row no-print" style="margin-bottom:15px;"><button class="btn btn-primary" onclick="generateRapProd()">Generer</button>` +
+    `<button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>` +
+    `<button class="btn btn-secondary" onclick="exportPDF()">📄 PDF</button></div>` +
+    `<div id="rapProdResult"></div></div>`;
 }
 
 function generateRapProd() {
@@ -1530,7 +1004,6 @@ function generateRapProd() {
     return true;
   });
 
-  // Grupper etter leverandør
   var levGroups = {};
   var total = 0;
   items.forEach(function(i) {
@@ -1540,28 +1013,25 @@ function generateRapProd() {
     levGroups[i.lev].sum += i.netto;
   });
 
-  // Sorter leverandører etter sum (descending)
   var levArray = [];
   for (var lev in levGroups) { levArray.push({ lev: lev, data: levGroups[lev] }); }
   levArray.sort(function(a, b) { return b.data.sum - a.data.sum; });
 
-  // === SUM PR. LEVERANDØR ØVERST ===
-  var html = '<div class="section" style="margin-bottom:15px;"><div class="section-title">Sum pr. leverandør</div>';
+  var html = `<div class="section" style="margin-bottom:15px;"><div class="section-title">Sum pr. leverandør</div>`;
   levArray.forEach(function(l) {
-    html += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #0f3460;"><span>' + l.lev + '</span><span style="color:#00d4ff;font-weight:600;">' + formatNumber(l.data.sum) + ' kg</span></div>';
+    html += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #0f3460;"><span>${l.lev}</span><span style="color:#00d4ff;font-weight:600;">${formatNumber(l.data.sum)} kg</span></div>`;
   });
-  html += '<div style="display:flex;justify-content:space-between;padding:6px 0;margin-top:5px;border-top:2px solid #00d4ff;"><span style="font-weight:700;">TOTALT</span><span style="color:#00d4ff;font-weight:700;">' + formatNumber(total) + ' kg</span></div></div>';
+  html += `<div style="display:flex;justify-content:space-between;padding:6px 0;margin-top:5px;border-top:2px solid #00d4ff;"><span style="font-weight:700;">TOTALT</span><span style="color:#00d4ff;font-weight:700;">${formatNumber(total)} kg</span></div></div>`;
 
-  // === PALLELISTE PER LEVERANDØR ===
   levArray.forEach(function(l) {
-    html += '<div class="section" style="margin-top:15px;"><div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0f3460;padding-bottom:5px;margin-bottom:8px;">' +
-      '<span style="font-weight:700;font-size:1rem;">' + l.lev + '</span>' +
-      '<span style="color:#00d4ff;font-weight:700;">' + formatNumber(l.data.sum) + ' kg</span></div>' +
-      '<table class="data-table"><thead><tr><th>Dato</th><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th></tr></thead><tbody>';
+    html += `<div class="section" style="margin-top:15px;"><div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0f3460;padding-bottom:5px;margin-bottom:8px;">` +
+      `<span style="font-weight:700;font-size:1rem;">${l.lev}</span>` +
+      `<span style="color:#00d4ff;font-weight:700;">${formatNumber(l.data.sum)} kg</span></div>` +
+      `<table class="data-table"><thead><tr><th>Dato</th><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th></tr></thead><tbody>`;
     l.data.items.forEach(function(item) {
-      html += '<tr><td>' + formatDateNo(item.dato) + '</td><td>' + (item.kar || "N/A") + '</td><td>' + item.storrelse + '</td><td>' + formatNumber(item.netto) + '</td><td>' + item.lev + '</td></tr>';
+      html += `<tr><td>${formatDateNo(item.dato)}</td><td>${item.kar || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td></tr>`;
     });
-    html += '</tbody></table></div>';
+    html += `</tbody></table></div>`;
   });
 
   $("rapProdResult").innerHTML = html;
@@ -1569,16 +1039,15 @@ function generateRapProd() {
 
 // ===================== LAGER =====================
 function renderLager(content) {
-  content.innerHTML = '<div class="section"><div class="section-title">📦 Lager-administrasjon</div>' +
-    '<div class="info-box">Admin-passord kreves for å endre eller slette. Størrelser kan omorganiseres med piler.</div>' +
-    '<div class="btn-row" style="margin-bottom:15px;">' +
-    '<button class="btn btn-secondary" onclick="showLagreAdmin()">🏭 Lager</button>' +
-    '<button class="btn btn-secondary" onclick="showStorrelserAdmin()">📏 Størrelser</button>' +
-    '<button class="btn btn-secondary" onclick="showLeverandorerAdmin()">🚚 Leverandører</button>' +
-    '<button class="btn btn-secondary" id="kontrollBtn">📋 Kontroll</button></div>' +
-    '<div id="lagerContent"></div></div>';
+  content.innerHTML = `<div class="section"><div class="section-title">📦 Lager-administrasjon</div>` +
+    `<div class="info-box">Admin-passord kreves for å endre eller slette. Størrelser kan omorganiseres med piler.</div>` +
+    `<div class="btn-row" style="margin-bottom:15px;">` +
+    `<button class="btn btn-secondary" onclick="showLagreAdmin()">🏭 Lager</button>` +
+    `<button class="btn btn-secondary" onclick="showStorrelserAdmin()">📏 Størrelser</button>` +
+    `<button class="btn btn-secondary" onclick="showLeverandorerAdmin()">🚚 Leverandører</button>` +
+    `<button class="btn btn-secondary" id="kontrollBtn">📋 Kontroll</button></div>` +
+    `<div id="lagerContent"></div></div>`;
   showLagreAdmin();
-  // Legg til event listener for Kontroll-knappen
   const kontrollBtn = document.getElementById('kontrollBtn');
   if (kontrollBtn) {
     kontrollBtn.addEventListener('click', function() {
@@ -1588,22 +1057,22 @@ function renderLager(content) {
 }
 
 function showLagreAdmin() {
-  let html = '<div class="section"><div class="section-title">🏭 Lager</div>' +
-    '<table class="data-table"><thead><tr><th>Navn</th><th>Handling</th></tr></thead><tbody>';
+  let html = `<div class="section"><div class="section-title">🏭 Lager</div>` +
+    `<table class="data-table"><thead><tr><th>Navn</th><th>Handling</th></tr></thead><tbody>`;
   LAGRE.forEach((l, idx) => {
-    html += '<tr><td>' + l + '</td><td class="actions">';
+    html += `<tr><td>${l}</td><td class="actions">`;
     if (l !== "Produsert" && l !== "Slettet") {
-      html += '<button class="edit-btn" onclick="renameLager(' + idx + ')">✏️</button>' +
-              '<button class="del-btn" onclick="deleteLager(' + idx + ')">🗑️</button>';
+      html += `<button class="edit-btn" onclick="renameLager(${idx})">✏️</button>` +
+              `<button class="del-btn" onclick="deleteLager(${idx})">🗑️</button>`;
     } else {
-      html += '<span style="color:#888;font-size:0.75rem;">Standard (låst)</span>';
+      html += `<span style="color:#888;font-size:0.75rem;">Standard (låst)</span>`;
     }
-    html += '</td></tr>';
+    html += `</td></tr>`;
   });
-  html += '</tbody></table>' +
-    '<div class="form-group" style="margin-top:15px;"><label>Legg til nytt lager</label>' +
-    '<input type="text" id="nyttLager" placeholder="Navn på lager"></div>' +
-    '<button class="btn btn-success" onclick="addLager()">➕ Legg til</button></div>';
+  html += `</tbody></table>` +
+    `<div class="form-group" style="margin-top:15px;"><label>Legg til nytt lager</label>` +
+    `<input type="text" id="nyttLager" placeholder="Navn på lager"></div>` +
+    `<button class="btn btn-success" onclick="addLager()">➕ Legg til</button></div>`;
   $("lagerContent").innerHTML = html;
 }
 
@@ -1648,10 +1117,10 @@ function deleteLager(idx) {
 }
 
 function showStorrelserAdmin() {
-  let html = '<div class="section"><div class="section-title">📏 Størrelser</div>' +
-    '<div class="form-group"><label>Velg lager</label>' +
-    '<select id="adminLager" onchange="showStorrelserForLager()">' + LAGRE.filter(l => l !== "Produsert" && l !== "Slettet").map(l => '<option value="' + l + '">' + l + '</option>').join("") + '</select></div>' +
-    '<div id="storrelserForLager"></div></div>';
+  let html = `<div class="section"><div class="section-title">📏 Størrelser</div>` +
+    `<div class="form-group"><label>Velg lager</label>` +
+    `<select id="adminLager" onchange="showStorrelserForLager()">${LAGRE.filter(l => l !== "Produsert" && l !== "Slettet").map(l => `<option value="${l}">${l}</option>`).join("")}</select></div>` +
+    `<div id="storrelserForLager"></div></div>`;
   $("lagerContent").innerHTML = html;
   showStorrelserForLager();
 }
@@ -1660,22 +1129,23 @@ function showStorrelserForLager() {
   const lager = $("adminLager").value;
   const sizes = STORRELSER[lager] || [];
 
-  let html = '<table class="data-table"><thead><tr><th>Rekkefølge</th><th>Størrelse</th><th>Kg i box</th><th>Handling</th></tr></thead><tbody>';
+  let html = `<table class="data-table"><thead><tr><th>Rekkefølge</th><th>Størrelse</th><th>Kg i box</th><th>Handling</th></tr></thead><tbody>`;
   sizes.forEach((s, idx) => {
     const kgBox = KG_I_BOX[lager + "_" + s] || "";
-    html += '<tr><td>' +
-      '<button class="order-btn" onclick="moveStorrelseUp(&quot;' + lager + '&quot;,' + idx + ')" ' + (idx === 0 ? 'disabled style="opacity:0.3"' : '') + '>▲</button>' +
-      '<button class="order-btn" onclick="moveStorrelseDown(&quot;' + lager + '&quot;,' + idx + ')" ' + (idx === sizes.length - 1 ? 'disabled style="opacity:0.3"' : '') + '>▼</button>' +
-      '</td><td>' + s + '</td>' +
-      '<td><input type="text" id="kgBox_' + idx + '" value="' + kgBox + '" placeholder="0,0" style="width:80px;padding:4px;background:#1a1a2e;border:1px solid #0f3460;border-radius:4px;color:#eee;text-align:center;" onchange="saveKgIBox(&quot;' + lager + '&quot;,&quot;' + s + '&quot;,' + idx + ')"></td>' +
-      '<td class="actions"><button class="del-btn" onclick="deleteStorrelse(&quot;' + lager + '&quot;,' + idx + ')">🗑️</button></td></tr>';
+    html += `<tr><td>` +
+      `<button class="order-btn" onclick="moveStorrelseUp('${lager}',${idx})" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>▲</button>` +
+      `<button class="order-btn" onclick="moveStorrelseDown('${lager}',${idx})" ${idx === sizes.length - 1 ? 'disabled style="opacity:0.3"' : ''}>▼</button>` +
+      `</td><td>${s}</td>` +
+      `<td><input type="text" id="kgBox_${idx}" value="${kgBox}" placeholder="0,0" style="width:80px;padding:4px;background:#1a1a2e;border:1px solid #0f3460;border-radius:4px;color:#eee;text-align:center;" onchange="saveKgIBox('${lager}','${s}',${idx})"></td>` +
+      `<td class="actions"><button class="del-btn" onclick="deleteStorrelse('${lager}',${idx})">🗑️</button></td></tr>`;
   });
-  html += '</tbody></table>' +
-    '<div class="form-group" style="margin-top:15px;"><label>Legg til ny størrelse for ' + lager + '</label>' +
-    '<input type="text" id="nyStorrelse" placeholder="F.eks. 2-3 kg"></div>' +
-    '<button class="btn btn-success" onclick="addStorrelse()">➕ Legg til</button>';
+  html += `</tbody></table>` +
+    `<div class="form-group" style="margin-top:15px;"><label>Legg til ny størrelse for ${lager}</label>` +
+    `<input type="text" id="nyStorrelse" placeholder="F.eks. 2-3 kg"></div>` +
+    `<button class="btn btn-success" onclick="addStorrelse()">➕ Legg til</button>`;
   $("storrelserForLager").innerHTML = html;
 }
+
 function saveKgIBox(lager, storrelse, idx) {
   const val = $("kgBox_" + idx).value.replace(",", ".");
   const num = parseFloat(val);
@@ -1688,7 +1158,6 @@ function saveKgIBox(lager, storrelse, idx) {
   saveDB();
   showToast("Kg i box lagret!");
 }
-
 
 function moveStorrelseUp(lager, idx) {
   if (idx === 0) return;
@@ -1729,17 +1198,17 @@ function deleteStorrelse(lager, idx) {
 }
 
 function showLeverandorerAdmin() {
-  let html = '<div class="section"><div class="section-title">🚚 Leverandører</div>' +
-    '<table class="data-table"><thead><tr><th>Navn</th><th>Handling</th></tr></thead><tbody>';
+  let html = `<div class="section"><div class="section-title">🚚 Leverandører</div>` +
+    `<table class="data-table"><thead><tr><th>Navn</th><th>Handling</th></tr></thead><tbody>`;
   LEVERANDORER.forEach((l, idx) => {
-    html += '<tr><td>' + l + '</td><td class="actions">' +
-      '<button class="edit-btn" onclick="renameLeverandor(' + idx + ')">✏️</button>' +
-      '<button class="del-btn" onclick="deleteLeverandor(' + idx + ')">🗑️</button></td></tr>';
+    html += `<tr><td>${l}</td><td class="actions">` +
+      `<button class="edit-btn" onclick="renameLeverandor(${idx})">✏️</button>` +
+      `<button class="del-btn" onclick="deleteLeverandor(${idx})">🗑️</button></td></tr>`;
   });
-  html += '</tbody></table>' +
-    '<div class="form-group" style="margin-top:15px;"><label>Legg til ny leverandør</label>' +
-    '<input type="text" id="nyLeverandor" placeholder="Navn på leverandør"></div>' +
-    '<button class="btn btn-success" onclick="addLeverandor()">➕ Legg til</button></div>';
+  html += `</tbody></table>` +
+    `<div class="form-group" style="margin-top:15px;"><label>Legg til ny leverandør</label>` +
+    `<input type="text" id="nyLeverandor" placeholder="Navn på leverandør"></div>` +
+    `<button class="btn btn-success" onclick="addLeverandor()">➕ Legg til</button></div>`;
   $("lagerContent").innerHTML = html;
 }
 
@@ -1776,77 +1245,42 @@ function deleteLeverandor(idx) {
   saveDB(); showToast("Leverandør slettet!"); showLeverandorerAdmin();
 }
 
-// ===================== SYNK (GET-basert) =====================
+// ===================== SYNK =====================
 function renderSynk(content) {
   var syncStatus = LAST_SYNC ? "Sist sync: " + formatDateTime(LAST_SYNC) : "Aldri sync'et";
   var queueCount = SYNC_QUEUE.length;
 
-  content.innerHTML = '<div class="section"><div class="section-title">🔄 Synkronisering</div>' +
-    '<div class="info-box">' +
-    '<strong>📘 Oppsett:</strong><br>1. Opprett Google Apps Script<br>2. Lim inn koden nedenfor<br>3. Deploy som web app<br>4. Lim inn URL her' +
-    '</div>' +
-    '<div class="form-group"><label>Google Apps Script URL</label>' +
-    '<input type="text" id="gscriptUrl" value="' + (DB.settings.gscriptUrl || '') + '" placeholder="https://script.google.com/macros/s/.../exec"></div>' +
-    '<div class="btn-row"><button class="btn btn-success" onclick="saveGScriptUrl()">💾 Lagre URL</button>' +
-    '<button class="btn btn-primary" onclick="testGScript()">🧪 Test tilkobling</button></div>' +
-    '<div class="section" style="margin-top:15px;border-top:2px solid #0f3460;padding-top:15px;">' +
-    '<div class="section-title">📊 Sync-status</div>' +
-    '<div class="info-box">' + syncStatus + (queueCount > 0 ? '<br>🕐 ' + queueCount + ' endring(er) venter på sync' : '') + '</div>' +
-    '<div class="btn-row"><button class="btn btn-primary" onclick="sendToGScript()">⬆️ Send til Google Sheets</button>' +
-    '<button class="btn btn-secondary" onclick="fetchFromGScript()">⬇️ Hent fra Google Sheets</button>' +
-    '<button class="btn btn-secondary" onclick="backgroundSync()">🔄 Sync nå</button></div></div>' +
-    '<div class="section" style="margin-top:20px;border-top:2px solid #0f3460;padding-top:15px;">' +
-    '<div class="section-title">📊 Google Regneark</div>' +
-    '<div class="info-box">Lim inn URL til Google Regneark for å åpne det direkte.</div>' +
-    '<div class="form-group"><label>Google Regneark URL</label>' +
-    '<input type="text" id="gsheetUrl" value="' + (DB.settings.gsheetUrl || '') + '" placeholder="https://docs.google.com/spreadsheets/d/.../edit"></div>' +
-    '<div class="btn-row"><button class="btn btn-success" onclick="saveGSheetUrl()">💾 Lagre URL</button>' +
-    '<button class="btn btn-primary" onclick="openGSheet()">🌐 Åpne regneark</button></div></div>' +
-    '<div class="btn-row" style="margin-top:15px;"><button class="btn btn-secondary" onclick="exportCSV()">📄 CSV</button>' +
-    '<button class="btn btn-secondary" onclick="exportExcel()">📊 Excel</button></div>' +
-    '<div id="synkStatus" style="margin-top:15px;"></div>' +
-    '<div class="section" style="margin-top:20px;"><div class="section-title">📋 Google Apps Script-kode</div>' +
-    '<textarea readonly style="width:100%;height:200px;font-size:0.75rem;background:#1a1a2e;color:#888;border:1px solid #0f3460;padding:8px;border-radius:6px;">' + getGScriptCode() + '</textarea>' +
-    '<button class="btn btn-secondary" style="margin-top:8px;width:100%;" onclick="copyGScriptCode()">📋 Kopier kode</button></div></div>';
+  content.innerHTML = `<div class="section"><div class="section-title">🔄 Synkronisering</div>` +
+    `<div class="info-box">` +
+    `<strong>📘 Oppsett:</strong><br>1. Opprett Google Apps Script<br>2. Lim inn koden nedenfor<br>3. Deploy som web app<br>4. Lim inn URL her` +
+    `</div>` +
+    `<div class="form-group"><label>Google Apps Script URL</label>` +
+    `<input type="text" id="gscriptUrl" value="${DB.settings.gscriptUrl || ''}" placeholder="https://script.google.com/macros/s/.../exec"></div>` +
+    `<div class="btn-row"><button class="btn btn-success" onclick="saveGScriptUrl()">💾 Lagre URL</button>` +
+    `<button class="btn btn-primary" onclick="testGScript()">🧪 Test tilkobling</button></div>` +
+    `<div class="section" style="margin-top:15px;border-top:2px solid #0f3460;padding-top:15px;">` +
+    `<div class="section-title">📊 Sync-status</div>` +
+    `<div class="info-box">${syncStatus}${queueCount > 0 ? '<br>🕐 ' + queueCount + ' endring(er) venter på sync' : ''}</div>` +
+    `<div class="btn-row"><button class="btn btn-primary" onclick="sendToGScript()">⬆️ Send til Google Sheets</button>` +
+    `<button class="btn btn-secondary" onclick="fetchFromGScript()">⬇️ Hent fra Google Sheets</button>` +
+    `<button class="btn btn-secondary" onclick="backgroundSync()">🔄 Sync nå</button></div></div>` +
+    `<div class="section" style="margin-top:20px;border-top:2px solid #0f3460;padding-top:15px;">` +
+    `<div class="section-title">📊 Google Regneark</div>` +
+    `<div class="info-box">Lim inn URL til Google Regneark for å åpne det direkte.</div>` +
+    `<div class="form-group"><label>Google Regneark URL</label>` +
+    `<input type="text" id="gsheetUrl" value="${DB.settings.gsheetUrl || ''}" placeholder="https://docs.google.com/spreadsheets/d/.../edit"></div>` +
+    `<div class="btn-row"><button class="btn btn-success" onclick="saveGSheetUrl()">💾 Lagre URL</button>` +
+    `<button class="btn btn-primary" onclick="openGSheet()">🌐 Åpne regneark</button></div></div>` +
+    `<div class="btn-row" style="margin-top:15px;"><button class="btn btn-secondary" onclick="exportCSV()">📄 CSV</button>` +
+    `<button class="btn btn-secondary" onclick="exportExcel()">📊 Excel</button></div>` +
+    `<div id="synkStatus" style="margin-top:15px;"></div>` +
+    `<div class="section" style="margin-top:20px;"><div class="section-title">📋 Google Apps Script-kode</div>` +
+    `<textarea readonly style="width:100%;height:200px;font-size:0.75rem;background:#1a1a2e;color:#888;border:1px solid #0f3460;padding:8px;border-radius:6px;">${getGScriptCode()}</textarea>` +
+    `<button class="btn btn-secondary" style="margin-top:8px;width:100%;" onclick="copyGScriptCode()">📋 Kopier kode</button></div></div>`;
 }
 
 function getGScriptCode() {
-  return `function doGet(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var action = e.parameter.action;
-  var callback = e.parameter.callback;
-  var result;
-  if (action === "read") {
-    var data = sheet.getDataRange().getValues();
-    result = {success: true, data: data};
-  }
-  else if (action === "write") {
-    var jsonData = e.parameter.data;
-    var items = JSON.parse(jsonData);
-    sheet.clear();
-    var headers = ["ID", "QR ID", "Kar nr", "Dato", "Lager", "Leverandør", "Størrelse", "Brutto", "Tara", "Netto", "Ut dato", "Registrert av"];
-    sheet.appendRow(headers);
-    items.forEach(function(row) {
-      sheet.appendRow([row.id, row.qrId || "", row.kar || "", row.dato, row.lager, row.lev, row.storrelse, row.brutto, row.tara, row.netto, row.utDato || "", row.userInn || ""]);
-    });
-    result = {success: true, count: items.length};
-  }
-  else {
-    var data = sheet.getDataRange().getValues();
-    result = data;
-  }
-  var output = ContentService.createTextOutput(callback + "(" + JSON.stringify(result) + ");");
-  output.setMimeType(ContentService.MimeType.JAVASCRIPT);
-  return output;
-}
-function doOptions(e) {
-  return ContentService.createTextOutput("")
-    .setHeaders({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
-    });
-}`;
+  return `function doGet(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var action = e.parameter.action;\n  var callback = e.parameter.callback;\n  var result;\n  if (action === "read") {\n    var data = sheet.getDataRange().getValues();\n    result = {success: true, data: data};\n  }\n  else if (action === "write") {\n    var jsonData = e.parameter.data;\n    var items = JSON.parse(jsonData);\n    sheet.clear();\n    var headers = ["ID", "QR ID", "Kar nr", "Dato", "Lager", "Leverandør", "Størrelse", "Brutto", "Tara", "Netto", "Ut dato", "Registrert av"];\n    sheet.appendRow(headers);\n    items.forEach(function(row) {\n      sheet.appendRow([row.id, row.qrId || "", row.kar || "", row.dato, row.lager, row.lev, row.storrelse, row.brutto, row.tara, row.netto, row.utDato || "", row.userInn || ""]);\n    });\n    result = {success: true, count: items.length};\n  }\n  else {\n    var data = sheet.getDataRange().getValues();\n    result = data;\n  }\n  var output = ContentService.createTextOutput(callback + "(" + JSON.stringify(result) + ");");\n  output.setMimeType(ContentService.MimeType.JAVASCRIPT);\n  return output;\n}\nfunction doOptions(e) {\n  return ContentService.createTextOutput("")\n    .setHeaders({\n      'Access-Control-Allow-Origin': '*',\n      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',\n      'Access-Control-Allow-Headers': 'Content-Type'\n    });\n}`;
 }
 
 function copyGScriptCode() {
@@ -1866,19 +1300,17 @@ function saveGSheetUrl() {
 function openGSheet() {
   var url = DB.settings.gsheetUrl || $("gsheetUrl").value.trim();
   if (!url) { showToast("Fyll inn Google Regneark URL først", "error"); return; }
-  // Sjekk at URL er gyldig
   if (url.indexOf("https://docs.google.com/spreadsheets/d/") !== 0) {
-    showToast("Ugyldig Google Regneark URL. Må starte med https://docs.google.com/spreadsheets/d/", "error");
+    showToast("Ugyldig Google Regneark URL", "error");
     return;
   }
   window.open(url, "_blank");
 }
 
-
 function testGScript() {
   const url = DB.settings.gscriptUrl || $("gscriptUrl").value.trim();
   if (!url) { showToast("Fyll inn URL først", "error"); return; }
-  $("synkStatus").innerHTML = '<div style="color:#3498db;">⏳ Tester tilkobling...</div>';
+  $("synkStatus").innerHTML = `<div style="color:#3498db;">⏳ Tester tilkobling...</div>`;
 
   const script = document.createElement("script");
   const callbackName = "gscriptCallback_" + Date.now();
@@ -1886,13 +1318,13 @@ function testGScript() {
     delete window[callbackName];
     if (script.parentNode) script.parentNode.removeChild(script);
     var rows = Array.isArray(data) ? data : (data.data || []);
-    $("synkStatus").innerHTML = '<div style="color:#0f9b6e;">✅ Tilkobling OK! Ark har ' + rows.length + ' rader</div>';
+    $("synkStatus").innerHTML = `<div style="color:#0f9b6e;">✅ Tilkobling OK! Ark har ${rows.length} rader</div>`;
     showToast("Tilkobling OK!");
   };
   script.onerror = function() {
     delete window[callbackName];
     if (script.parentNode) script.parentNode.removeChild(script);
-    $("synkStatus").innerHTML = '<div style="color:#e94560;">❌ Feil: Kunne ikke koble til. Sjekk URL.</div>';
+    $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Feil: Kunne ikke koble til</div>`;
     showToast("Tilkobling feilet", "error");
   };
   script.src = url + "?callback=" + callbackName;
@@ -1901,7 +1333,7 @@ function testGScript() {
     if (window[callbackName]) {
       delete window[callbackName];
       if (script.parentNode) script.parentNode.removeChild(script);
-      $("synkStatus").innerHTML = '<div style="color:#e94560;">❌ Tidsavbrudd. Sjekk at URL er riktig.</div>';
+      $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Tidsavbrudd</div>`;
     }
   }, 10000);
 }
@@ -1909,11 +1341,11 @@ function testGScript() {
 function sendToGScript() {
   const url = DB.settings.gscriptUrl;
   if (!url) { showToast("Lagre URL først", "error"); return; }
-  $("synkStatus").innerHTML = '<div style="color:#3498db;">⏳ Sender data...</div>';
+  $("synkStatus").innerHTML = `<div style="color:#3498db;">⏳ Sender data...</div>`;
 
   const jsonData = JSON.stringify(DB.items);
   if (jsonData.length > 7000) {
-    $("synkStatus").innerHTML = '<div style="color:#f39c12;">⚠️ For mye data for GET. Bruk CSV-eksport i stedet.</div>';
+    $("synkStatus").innerHTML = `<div style="color:#f39c12;">⚠️ For mye data for GET</div>`;
     showToast("For mye data for direkte synk", "error");
     return;
   }
@@ -1924,17 +1356,17 @@ function sendToGScript() {
     delete window[callbackName];
     if (script.parentNode) script.parentNode.removeChild(script);
     if (data && data.success) {
-      $("synkStatus").innerHTML = '<div style="color:#0f9b6e;">✅ Sendt ' + data.count + ' rader til Google Sheets!</div>';
+      $("synkStatus").innerHTML = `<div style="color:#0f9b6e;">✅ Sendt ${data.count} rader!</div>`;
       showToast("Data sendt!");
     } else {
-      $("synkStatus").innerHTML = '<div style="color:#e94560;">❌ Send feilet: ' + (data.error || "Ukjent feil") + '</div>';
+      $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Send feilet</div>`;
       showToast("Send feilet", "error");
     }
   };
   script.onerror = function() {
     delete window[callbackName];
     if (script.parentNode) script.parentNode.removeChild(script);
-    $("synkStatus").innerHTML = '<div style="color:#e94560;">❌ Send feilet: Kunne ikke koble til</div>';
+    $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Send feilet</div>`;
     showToast("Send feilet", "error");
   };
   script.src = url + "?action=write&data=" + encodeURIComponent(jsonData) + "&callback=" + callbackName;
@@ -1943,7 +1375,7 @@ function sendToGScript() {
     if (window[callbackName]) {
       delete window[callbackName];
       if (script.parentNode) script.parentNode.removeChild(script);
-      $("synkStatus").innerHTML = '<div style="color:#e94560;">❌ Tidsavbrudd ved sending</div>';
+      $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Tidsavbrudd</div>`;
     }
   }, 15000);
 }
@@ -1951,7 +1383,7 @@ function sendToGScript() {
 function fetchFromGScript(silent) {
   var url = DB.settings.gscriptUrl;
   if (!url) { if (!silent) showToast("Lagre URL først", "error"); return; }
-  if (!silent) $("synkStatus").innerHTML = '<div style="color:#3498db;">⏳ Henter data...</div>';
+  if (!silent) $("synkStatus").innerHTML = `<div style="color:#3498db;">⏳ Henter data...</div>`;
   updateSyncIndicator("syncing");
 
   var script = document.createElement("script");
@@ -1961,7 +1393,6 @@ function fetchFromGScript(silent) {
     if (script.parentNode) script.parentNode.removeChild(script);
     if (data && data.success && data.data) {
       var rows = data.data;
-      // Sheet = master: Erstatt DB.items med data fra Sheet
       DB.items = [];
       for (var i = 1; i < rows.length; i++) {
         var r = rows[i];
@@ -1977,13 +1408,13 @@ function fetchFromGScript(silent) {
       LAST_SYNC = new Date();
       updateSyncIndicator("ok");
       if (!silent) {
-        $("synkStatus").innerHTML = '<div style="color:#0f9b6e;">✅ Importert ' + (rows.length - 1) + ' rader fra Sheet!</div>';
-        showToast("Data hentet fra Google Sheets!");
+        $("synkStatus").innerHTML = `<div style="color:#0f9b6e;">✅ Importert ${rows.length - 1} rader!</div>`;
+        showToast("Data hentet!");
       }
     } else {
       updateSyncIndicator("error");
       if (!silent) {
-        $("synkStatus").innerHTML = '<div style="color:#e94560;">❌ Ingen data mottatt</div>';
+        $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Ingen data mottatt</div>`;
         showToast("Import feilet", "error");
       }
     }
@@ -1994,7 +1425,7 @@ function fetchFromGScript(silent) {
     if (script.parentNode) script.parentNode.removeChild(script);
     updateSyncIndicator("error");
     if (!silent) {
-      $("synkStatus").innerHTML = '<div style="color:#e94560;">❌ Hent feilet: Kunne ikke koble til</div>';
+      $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Hent feilet</div>`;
       showToast("Hent feilet", "error");
     }
     IS_SYNCING = false;
@@ -2006,7 +1437,7 @@ function fetchFromGScript(silent) {
       delete window[callbackName];
       if (script.parentNode) script.parentNode.removeChild(script);
       updateSyncIndicator("error");
-      if (!silent) $("synkStatus").innerHTML = '<div style="color:#e94560;">❌ Tidsavbrudd ved henting</div>';
+      if (!silent) $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Tidsavbrudd</div>`;
       IS_SYNCING = false;
     }
   }, 15000);
@@ -2024,12 +1455,12 @@ function exportCSV() {
 }
 
 function exportExcel() {
-  let html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><style>table{border-collapse:collapse;}th,td{border:1px solid #000;padding:5px;}</style></head><body><table>';
+  let html = '\u003chtml xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">\u003chead><meta charset="UTF-8">\u003cstyle>table{border-collapse:collapse;}th,td{border:1px solid #000;padding:5px;}\u003c/style\u003e\u003c/head\u003e\u003cbody><table>';
   html += '<tr><th>ID</th><th>QR ID</th><th>Kar nr</th><th>Dato</th><th>Lager</th><th>Leverandør</th><th>Størrelse</th><th>Brutto</th><th>Tara</th><th>Netto</th><th>Ut dato</th><th>Registrert av</th></tr>';
   DB.items.forEach(i => {
     html += '<tr><td>' + i.id + '</td><td>' + (i.qrId || "") + '</td><td>' + (i.kar || "") + '</td><td>' + i.dato + '</td><td>' + i.lager + '</td><td>' + i.lev + '</td><td>' + i.storrelse + '</td><td>' + i.brutto + '</td><td>' + i.tara + '</td><td>' + i.netto + '</td><td>' + (i.utDato || "") + '</td><td>' + (i.userInn || "") + '</td></tr>';
   });
-  html += '</table></body></html>';
+  html += '</table>\u003c/body\u003e\u003c/html\u003e';
   const blob = new Blob([html], { type: "application/vnd.ms-excel" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a"); a.href = url; a.download = "varelager.xls"; a.click(); URL.revokeObjectURL(url);
@@ -2044,14 +1475,13 @@ function exportPDF() {
     levSum[i.lev] = (levSum[i.lev] || 0) + i.netto;
   });
 
-  let html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Varelager Rapport</title>
-<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Varelager%22%2C%22short_name%22%3A%22Varelager%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a1a2e%22%2C%22theme_color%22%3A%22%231a1a2e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%2520viewBox%3D%270%25200%2520192%2520192%27%253E%253Crect%2520fill%3D%27%252300d4ff%27%2520width%3D%27192%27%2520height%3D%27192%27%2520rx%3D%2724%27%2F%253E%253Ctext%2520x%3D%2796%27%2520y%3D%27120%27%2520font-size%3D%27100%27%2520text-anchor%3D%27middle%27%2520fill%3D%27%25231a1a2e%27%253E%25F0%259F%2593%25A6%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">';
-  html += '<style>body{font-family:Arial,sans-serif;padding:20px;}h1{color:#333;}h2{color:#666;font-size:1.1rem;margin-top:20px;}';
+  let html = '\u003c!DOCTYPE html\u003e\u003chtml>\u003chead><meta charset="UTF-8"><title>Varelager Rapport</title>';
+  html += '\u003cstyle>body{font-family:Arial,sans-serif;padding:20px;}h1{color:#333;}h2{color:#666;font-size:1.1rem;margin-top:20px;}';
   html += 'table{width:100%;border-collapse:collapse;margin-top:10px;font-size:0.9rem;}th,td{border:1px solid #333;padding:6px;text-align:left;}';
   html += 'th{background:#f0f0f0;font-weight:600;}tr:nth-child(even){background:#f9f9f9;}';
   html += '.sum-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #ddd;}';
   html += '.total{border-top:2px solid #333;font-weight:700;margin-top:5px;padding-top:8px;}';
-  html += '.right{text-align:right;} .num{color:#0066cc;font-weight:600;}</style></head><body>';
+  html += '.right{text-align:right;} .num{color:#0066cc;font-weight:600;}\u003c/style\u003e\u003c/head\u003e\u003cbody>';
   html += '<h1>📊 Varelager Rapport</h1><p style="color:#888;">Generert: ' + new Date().toLocaleString("no-NO") + '</p>';
 
   html += '<h2>Sum pr. leverandør</h2>';
@@ -2068,7 +1498,7 @@ function exportPDF() {
     const dogn = daysBetween(item.dato, new Date());
     html += '<tr><td>' + (item.qrId || "N/A") + '</td><td>' + item.storrelse + '</td><td>' + formatNumber(item.netto) + '</td><td>' + item.lev + '</td><td>' + formatDateNo(item.dato) + '</td><td>' + dogn + '</td><td>' + item.lager + '</td></tr>';
   });
-  html += '</tbody></table></body></html>';
+  html += '</tbody></table>\u003c/body\u003e\u003c/html\u003e';
 
   const blob = new Blob([html], { type: "application/pdf" });
   const url = URL.createObjectURL(blob);
@@ -2078,22 +1508,22 @@ function exportPDF() {
 
 // ===================== INNSTILLINGER =====================
 function renderInst(content) {
-  content.innerHTML = '<div class="section"><div class="section-title">⚙️ Innstillinger</div>' +
-    '<div class="btn-row" style="margin-bottom:15px;">' +
-    '<button class="btn btn-secondary" onclick="showInstUsers()">👥 Brukere</button>' +
-    '<button class="btn btn-secondary" onclick="showInstData()">💾 Data</button></div>' +
-    '<div id="instContent"></div></div>';
+  content.innerHTML = `<div class="section"><div class="section-title">⚙️ Innstillinger</div>` +
+    `<div class="btn-row" style="margin-bottom:15px;">` +
+    `<button class="btn btn-secondary" onclick="showInstUsers()">👥 Brukere</button>` +
+    `<button class="btn btn-secondary" onclick="showInstData()">💾 Data</button></div>` +
+    `<div id="instContent"></div></div>`;
   showInstUsers();
 }
 
 function showInstUsers() {
-  let html = '<div class="section"><div class="section-title">Brukere</div>' +
-    '<table class="data-table"><thead><tr><th>Navn</th><th>Admin</th><th>Handling</th></tr></thead><tbody>';
+  let html = `<div class="section"><div class="section-title">Brukere</div>` +
+    `<table class="data-table"><thead><tr><th>Navn</th><th>Admin</th><th>Handling</th></tr></thead><tbody>`;
   DB.users.forEach(u => {
-    html += '<tr><td>' + u.name + '</td><td>' + (u.isAdmin ? "Ja" : "Nei") + '</td>' +
-      '<td class="actions">' + (!u.isAdmin ? '<button class="del-btn" onclick="deleteUser(' + u.id + ')">Slett</button>' : '') + '</td></tr>';
+    html += `<tr><td>${u.name}</td><td>${u.isAdmin ? "Ja" : "Nei"}</td>` +
+      `<td class="actions">${!u.isAdmin ? `<button class="del-btn" onclick="deleteUser(${u.id})">Slett</button>` : ''}</td></tr>`;
   });
-  html += '</tbody></table></div>';
+  html += `</tbody></table></div>`;
   $("instContent").innerHTML = html;
 }
 
@@ -2105,10 +1535,10 @@ function deleteUser(id) {
 }
 
 function showInstData() {
-  $("instContent").innerHTML = '<div class="section"><div class="section-title">Datahåndtering</div>' +
-    '<div class="btn-row"><button class="btn btn-secondary" onclick="exportJSON()">📤 Eksporter JSON</button>' +
-    '<button class="btn btn-secondary" onclick="importJSON()">📥 Importer JSON</button></div>' +
-    '<div class="btn-row" style="margin-top:15px;"><button class="btn btn-danger" onclick="deleteAllData()">🗑️ Slett alle data</button></div></div>';
+  $("instContent").innerHTML = `<div class="section"><div class="section-title">Datahåndtering</div>` +
+    `<div class="btn-row"><button class="btn btn-secondary" onclick="exportJSON()">📤 Eksporter JSON</button>` +
+    `<button class="btn btn-secondary" onclick="importJSON()">📥 Importer JSON</button></div>` +
+    `<div class="btn-row" style="margin-top:15px;"><button class="btn btn-danger" onclick="deleteAllData()">🗑️ Slett alle data</button></div></div>`;
 }
 
 function exportJSON() {
@@ -2152,10 +1582,10 @@ function deleteAllData() {
 // ===================== QR KODE =====================
 function showQRCode(qrId, title) {
   const modal = document.createElement("div"); modal.className = "modal-overlay"; modal.id = "qrModal";
-  modal.innerHTML = '<div class="modal-content" style="text-align:center;">' +
-    '<div class="modal-header"><h2>' + title + '</h2><button class="modal-close" onclick="document.getElementById(\'qrModal\').remove()">&times;</button></div>' +
-    '<div id="qrCodeDisplay" style="padding:20px;"></div><p style="font-family:monospace;font-size:1.2rem;margin-top:10px;">' + qrId + '</p>' +
-    '<button class="btn btn-secondary" onclick="document.getElementById(\'qrModal\').remove()">Lukk</button></div>';
+  modal.innerHTML = `<div class="modal-content" style="text-align:center;">` +
+    `<div class="modal-header"><h2>${title}</h2><button class="modal-close" onclick="document.getElementById('qrModal').remove()">&times;</button></div>` +
+    `<div id="qrCodeDisplay" style="padding:20px;"></div><p style="font-family:monospace;font-size:1.2rem;margin-top:10px;">${qrId}</p>` +
+    `<button class="btn btn-secondary" onclick="document.getElementById('qrModal').remove()">Lukk</button></div>`;
   document.body.appendChild(modal);
   generateInlineQR(qrId, "qrCodeDisplay");
 }
@@ -2189,11 +1619,11 @@ function generateInlineQR(text, containerId) {
 // ===================== QR SCANNER =====================
 function startQRScan() {
   const overlay = document.createElement("div"); overlay.className = "qr-overlay"; overlay.id = "qrOverlay";
-  overlay.innerHTML = '<button class="close-btn" onclick="stopQRScan()">Lukk</button>' +
-    '<video id="qrVideo" autoplay playsinline></video>' +
-    '<div class="qr-manual"><p>QR-kode leses automatisk...</p>' +
-    '<div class="form-group"><label>Eller tast inn manuelt:</label><input type="text" id="qrManualInput" placeholder="QR ID eller Kar nr"></div>' +
-    '<button class="btn btn-primary" onclick="manualQRInput()">Søk</button></div>';
+  overlay.innerHTML = `<button class="close-btn" onclick="stopQRScan()">Lukk</button>` +
+    `<video id="qrVideo" autoplay playsinline></video>` +
+    `<div class="qr-manual"><p>QR-kode leses automatisk...</p>` +
+    `<div class="form-group"><label>Eller tast inn manuelt:</label><input type="text" id="qrManualInput" placeholder="QR ID eller Kar nr"></div>` +
+    `<button class="btn btn-primary" onclick="manualQRInput()">Søk</button></div>`;
   document.body.appendChild(overlay);
 
   navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
@@ -2214,7 +1644,7 @@ function manualQRInput() {
 // ===================== MODAL =====================
 function showModal(title, content) {
   const modal = document.createElement("div"); modal.className = "modal-overlay"; modal.id = "activeModal";
-  modal.innerHTML = '<div class="modal-content"><div class="modal-header"><h2>' + title + '</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>' + content + '</div>';
+  modal.innerHTML = `<div class="modal-content"><div class="modal-header"><h2>${title}</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>${content}</div>`;
   document.body.appendChild(modal);
 }
 
@@ -2223,38 +1653,6 @@ function closeModal() {
 }
 
 // ===================== START =====================
-// ===================== START =====================
-
-// Service Worker Registration for PWA
-if ('serviceWorker' in navigator) {
-  const swCode = `
-    self.addEventListener('install', function(event) {
-      event.waitUntil(
-        caches.open('varelager-v2').then(function(cache) {
-          return cache.addAll(['./']);
-        })
-      );
-      self.skipWaiting();
-    });
-    self.addEventListener('fetch', function(event) {
-      event.respondWith(
-        caches.match(event.request).then(function(response) {
-          return response || fetch(event.request);
-        })
-      );
-    });
-  `;
-
-  const swBlob = new Blob([swCode], { type: 'application/javascript' });
-  const swUrl = URL.createObjectURL(swBlob);
-
-  navigator.serviceWorker.register(swUrl).then(function(registration) {
-    console.log('Service Worker registrert:', registration.scope);
-  }).catch(function(error) {
-    console.log('Service Worker registrering feilet:', error);
-  });
-}
-
 window.onload = init;
 </script>
 </body>
