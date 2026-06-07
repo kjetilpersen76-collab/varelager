@@ -1912,7 +1912,7 @@ function startQRScanInn(dato, tid, lager, lev, storrelse, kar, brutto, tara, net
 
   const overlay = document.createElement("div"); overlay.className = "qr-overlay"; overlay.id = "qrOverlayInn";
   overlay.innerHTML = `<button class="close-btn" onclick="stopQRScanInn()">Lukk</button>` +
-    `<video id="qrVideoInn" autoplay playsinline></video>` +
+    `<div id="qrReaderInn" style="width:100%;max-width:400px;height:300px;margin:0 auto;border-radius:12px;overflow:hidden;"></div>` +
     `<div class="qr-manual"><p>Scan QR-kode på pallen...</p>` +
     `<div class="form-group"><label>Eller tast inn QR-kode manuelt:</label><input type="text" id="qrManualInputInn" placeholder="QR ID"></div>` +
     `<button class="btn btn-primary" onclick="manualQRInputInn()">Lagre med QR</button></div>`;
@@ -1921,28 +1921,31 @@ function startQRScanInn(dato, tid, lager, lev, storrelse, kar, brutto, tara, net
   // Last inn html5-qrcode hvis ikke allerede lastet
   loadHtml5Qrcode(function() {
     if (typeof Html5Qrcode !== 'undefined') {
-      const qrReader = new Html5Qrcode("qrVideoInn");
-      qrReader.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        function(decodedText) {
-          qrReader.stop().then(() => {
-            stopQRScanInn();
-            saveInnWithQR(decodedText);
-          });
-        },
-        function(errorMessage) { /* ignorer scan-feil */ }
-      ).catch(err => {
-        showToast("Kamera ikke tilgjengelig: " + err, "info");
-      });
+      try {
+        const qrReader = new Html5Qrcode("qrReaderInn");
+        qrReader.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          function(decodedText) {
+            qrReader.stop().then(() => {
+              stopQRScanInn();
+              saveInnWithQR(decodedText);
+            }).catch(() => {
+              stopQRScanInn();
+              saveInnWithQR(decodedText);
+            });
+          },
+          function(errorMessage) { /* ignorer scan-feil */ }
+        ).catch(err => {
+          console.log("QR start feil:", err);
+          showToast("Kamera ikke tilgjengelig. Bruk manuell inntasting.", "info");
+        });
+      } catch(e) {
+        console.log("QR init feil:", e);
+        showToast("QR-scanner feil. Bruk manuell inntasting.", "info");
+      }
     } else {
-      // Fallback: bruk standard getUserMedia uten QR-leser
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-        .then(stream => { 
-          const video = document.getElementById("qrVideoInn"); 
-          if (video) { video.srcObject = stream; qrScanner = stream; }
-        })
-        .catch(() => { showToast("Kamera ikke tilgjengelig. Bruk manuell inntasting.", "info"); });
+      showToast("QR-scanner ikke lastet. Bruk manuell inntasting.", "info");
     }
   });
 }
