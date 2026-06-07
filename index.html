@@ -173,7 +173,7 @@ function loadHtml5Qrcode(callback) {
   document.head.appendChild(script);
 }
 
-const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.0.0" };
+const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.1.0" };
 
 let LAGRE = ["Kjøpslager", "Sortert", "Produsert", "Slettet"];
 let LEVERANDORER = ["Kjøllefjord", "Båtsfjord", "Berlevåg", "Nesseby"];
@@ -324,6 +324,11 @@ function renderTabContent() {
 }
 
 // ===================== INN =====================
+function validateKarNr(input) {
+  // Kun bokstaver og tall, ingen mellomrom, ingen spesialtegn
+  input.value = input.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+}
+
 function renderInn(content) {
   const now = new Date();
   const dateStr = now.toISOString().split("T")[0];
@@ -334,7 +339,10 @@ function renderInn(content) {
     `<div class="form-group"><label>Lager</label><select id="innLager" onchange="updateStorrelser()"><option value="">Velg lager...</option>${LAGRE.map(l => `<option value="${l}">${l}</option>`).join("")}</select></div>` +
     `<div class="form-group"><label>Leverandør</label><select id="innLev"><option value="">Velg leverandør...</option>${LEVERANDORER.map(l => `<option value="${l}">${l}</option>`).join("")}</select></div>` +
     `<div class="form-group"><label>Størrelse</label><select id="innStorrelse"><option value="">Velg størrelse...</option></select></div>` +
-    `<div class="form-group"><label>Kar nr</label><input type="text" id="innKar" placeholder="F.eks. K-123"></div>` +
+    `<div class="form-row">` +
+    `<div class="form-group" style="flex:1;"><label>Kar nr</label><input type="text" id="innKar" placeholder="F.eks K123" oninput="validateKarNr(this)"></div>` +
+    `<div class="form-group" style="flex:1;"><label id="qrLabel" style="color:#888;">QR ID</label>` +
+    `<input type="text" id="innQrId" placeholder="" readonly style="background:#0f3460;color:#00d4ff;font-weight:600;"></div></div>` +
     `<div class="form-row"><div class="form-group"><label>Brutto kilo</label><input type="text" id="innBrutto" placeholder="0,0" oninput="calcNetto()"></div>` +
     `<div class="form-group"><label>Tara kilo</label><input type="text" id="innTara" placeholder="0,0" oninput="calcNetto()"></div></div>` +
     `<div class="form-group"><label>Netto kilo</label><input type="text" id="innNetto" placeholder="0,0" readonly style="background:#0f3460;"></div>` +
@@ -365,6 +373,7 @@ function saveInn(withQR) {
   const lev = $("innLev").value;
   const storrelse = $("innStorrelse").value;
   const kar = $("innKar").value.trim();
+  const qrId = $("innQrId") ? $("innQrId").value.trim() : "";
   const brutto = parseNumber($("innBrutto").value);
   const tara = parseNumber($("innTara").value);
   const netto = parseNumber($("innNetto").value);
@@ -374,18 +383,19 @@ function saveInn(withQR) {
 
   if (withQR) {
     // Åpne QR-scanner for å lese QR-kode fra pallen
-    startQRScanInn(dato, tid, lager, lev, storrelse, kar, brutto, tara, netto);
+    startQRScanInn();
     return;
   }
 
   const item = {
-    id: generateId(), qrId: "", kar: kar,
+    id: generateId(), qrId: qrId, kar: kar,
     dato: dato + "T" + tid, lager: lager, lev: lev, storrelse: storrelse,
     brutto: brutto, tara: tara, netto: netto, utDato: null, userInn: currentUser.name
   };
 
   DB.items.push(item); saveDB(); showToast("Vare lagret!");
-  $("innKar").value = ""; $("innBrutto").value = ""; $("innTara").value = ""; $("innNetto").value = "";
+  $("innKar").value = ""; $("innQrId").value = ""; $("innBrutto").value = ""; $("innTara").value = ""; $("innNetto").value = "";
+  $("qrLabel").textContent = "QR ID"; $("qrLabel").style.color = "#888";
   const now = new Date();
   $("innDato").value = now.toISOString().split("T")[0];
   $("innTid").value = now.toTimeString().slice(0, 5);
@@ -1906,11 +1916,8 @@ function startQRScan() {
 }
 
 // QR-scanning for INN (lagre vare med skannet QR-kode)
-let qrInnData = null;
 
-function startQRScanInn(dato, tid, lager, lev, storrelse, kar, brutto, tara, netto) {
-  qrInnData = { dato, tid, lager, lev, storrelse, kar, brutto, tara, netto };
-
+function startQRScanInn() {
   const overlay = document.createElement("div"); overlay.className = "qr-overlay"; overlay.id = "qrOverlayInn";
   overlay.innerHTML = `<button class="close-btn" onclick="stopQRScanInn()">Lukk</button>` +
     `<div style="width:100%;max-width:400px;margin:0 auto;text-align:center;">` +
@@ -1920,7 +1927,7 @@ function startQRScanInn(dato, tid, lager, lev, storrelse, kar, brutto, tara, net
     `</div>` +
     `<div class="qr-manual"><p>Scan QR-kode på pallen...</p>` +
     `<div class="form-group"><label>Eller tast inn QR-kode manuelt:</label><input type="text" id="qrManualInputInn" placeholder="QR ID"></div>` +
-    `<button class="btn btn-primary" onclick="manualQRInputInn()">Lagre med QR</button></div>`;
+    `<button class="btn btn-primary" onclick="manualQRInputInn()">Sett QR ID</button></div>`;
   document.body.appendChild(overlay);
 
   // Åpne kamera med getUserMedia
@@ -1964,7 +1971,6 @@ function stopQRScanInn() {
   if (qrScanner) { qrScanner.getTracks().forEach(t => t.stop()); qrScanner = null; }
   const overlay = document.getElementById("qrOverlayInn"); 
   if (overlay) overlay.remove();
-  qrInnData = null;
 }
 
 function manualQRInputInn() {
@@ -1975,35 +1981,20 @@ function manualQRInputInn() {
 }
 
 function saveInnWithQR(qrId) {
-  if (!qrInnData) return;
-  const { dato, tid, lager, lev, storrelse, kar, brutto, tara, netto } = qrInnData;
-
   // Sjekk om QR-ID allerede finnes
   if (DB.items.some(i => i.qrId === qrId && !i.utDato)) {
     showToast("Advarsel: QR-kode finnes allerede!", "error");
   }
 
-  const item = {
-    id: generateId(), qrId: qrId, kar: kar,
-    dato: dato + "T" + tid, lager: lager, lev: lev, storrelse: storrelse,
-    brutto: brutto, tara: tara, netto: netto, utDato: null, userInn: currentUser.name
-  };
+  // Sett QR-ID i feltet og vis gul tekst
+  const qrInput = $("innQrId");
+  const qrLabel = $("qrLabel");
+  if (qrInput && qrLabel) {
+    qrInput.value = qrId;
+    qrLabel.innerHTML = '<span style="color:#f39c12;font-weight:600;">QR ID funnet, trykk Lagre!</span>';
+  }
 
-  DB.items.push(item); saveDB(); showToast("Vare lagret med QR: " + qrId);
-
-  // Tøm alle feltene
-  $("innKar").value = "";
-  $("innBrutto").value = "";
-  $("innTara").value = "";
-  $("innNetto").value = "";
-  $("innLager").value = "";
-  $("innLev").value = "";
-  $("innStorrelse").innerHTML = '<option value="">Velg størrelse...</option>';
-
-  const now = new Date();
-  $("innDato").value = now.toISOString().split("T")[0];
-  $("innTid").value = now.toTimeString().slice(0, 5);
-  qrInnData = null;
+  showToast("QR-kode skannet: " + qrId + " - Trykk Lagre for å lagre");
 }
 
 function stopQRScan() {
