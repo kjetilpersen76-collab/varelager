@@ -371,8 +371,14 @@ function saveInn(withQR) {
   if (!lager || !lev || !storrelse) { showToast("Fyll ut alle obligatoriske felter", "error"); return; }
   if (kar && DB.items.some(i => i.kar === kar && !i.utDato)) { showToast("Advarsel: Kar nr finnes allerede!", "error"); }
 
+  if (withQR) {
+    // Åpne QR-scanner for å lese QR-kode fra pallen
+    startQRScanInn(dato, tid, lager, lev, storrelse, kar, brutto, tara, netto);
+    return;
+  }
+
   const item = {
-    id: generateId(), qrId: withQR ? kar : "", kar: withQR ? "" : kar,
+    id: generateId(), qrId: "", kar: kar,
     dato: dato + "T" + tid, lager: lager, lev: lev, storrelse: storrelse,
     brutto: brutto, tara: tara, netto: netto, utDato: null, userInn: currentUser.name
   };
@@ -382,7 +388,6 @@ function saveInn(withQR) {
   const now = new Date();
   $("innDato").value = now.toISOString().split("T")[0];
   $("innTid").value = now.toTimeString().slice(0, 5);
-  if (withQR) { showToast("QR-kode lagret: " + item.qrId); }
 }
 
 // ===================== UT =====================
@@ -1897,6 +1902,86 @@ function startQRScan() {
   navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
     .then(stream => { const video = $("qrVideo"); video.srcObject = stream; qrScanner = stream; })
     .catch(() => { showToast("Kamera ikke tilgjengelig. Bruk manuell inntasting.", "info"); });
+}
+
+// QR-scanning for INN (lagre vare med skannet QR-kode)
+let qrInnData = null;
+
+function startQRScanInn(dato, tid, lager, lev, storrelse, kar, brutto, tara, netto) {
+  qrInnData = { dato, tid, lager, lev, storrelse, kar, brutto, tara, netto };
+
+  const overlay = document.createElement("div"); overlay.className = "qr-overlay"; overlay.id = "qrOverlayInn";
+  overlay.innerHTML = `<button class="close-btn" onclick="stopQRScanInn()">Lukk</button>` +
+    `<video id="qrVideoInn" autoplay playsinline></video>` +
+    `<div class="qr-manual"><p>Scan QR-kode på pallen...</p>` +
+    `<div class="form-group"><label>Eller tast inn QR-kode manuelt:</label><input type="text" id="qrManualInputInn" placeholder="QR ID"></div>` +
+    `<button class="btn btn-primary" onclick="manualQRInputInn()">Lagre med QR</button></div>`;
+  document.body.appendChild(overlay);
+
+  // Last inn html5-qrcode hvis ikke allerede lastet
+  loadHtml5Qrcode(function() {
+    if (typeof Html5Qrcode !== 'undefined') {
+      const qrReader = new Html5Qrcode("qrVideoInn");
+      qrReader.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        function(decodedText) {
+          qrReader.stop().then(() => {
+            stopQRScanInn();
+            saveInnWithQR(decodedText);
+          });
+        },
+        function(errorMessage) { /* ignorer scan-feil */ }
+      ).catch(err => {
+        showToast("Kamera ikke tilgjengelig: " + err, "info");
+      });
+    } else {
+      // Fallback: bruk standard getUserMedia uten QR-leser
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(stream => { 
+          const video = document.getElementById("qrVideoInn"); 
+          if (video) { video.srcObject = stream; qrScanner = stream; }
+        })
+        .catch(() => { showToast("Kamera ikke tilgjengelig. Bruk manuell inntasting.", "info"); });
+    }
+  });
+}
+
+function stopQRScanInn() {
+  if (qrScanner) { qrScanner.getTracks().forEach(t => t.stop()); qrScanner = null; }
+  const overlay = document.getElementById("qrOverlayInn"); 
+  if (overlay) overlay.remove();
+  qrInnData = null;
+}
+
+function manualQRInputInn() {
+  const val = document.getElementById("qrManualInputInn").value.trim(); 
+  if (!val) { showToast("Tast inn QR-kode", "error"); return; }
+  stopQRScanInn(); 
+  saveInnWithQR(val);
+}
+
+function saveInnWithQR(qrId) {
+  if (!qrInnData) return;
+  const { dato, tid, lager, lev, storrelse, kar, brutto, tara, netto } = qrInnData;
+
+  // Sjekk om QR-ID allerede finnes
+  if (DB.items.some(i => i.qrId === qrId && !i.utDato)) {
+    showToast("Advarsel: QR-kode finnes allerede!", "error");
+  }
+
+  const item = {
+    id: generateId(), qrId: qrId, kar: kar,
+    dato: dato + "T" + tid, lager: lager, lev: lev, storrelse: storrelse,
+    brutto: brutto, tara: tara, netto: netto, utDato: null, userInn: currentUser.name
+  };
+
+  DB.items.push(item); saveDB(); showToast("Vare lagret med QR: " + qrId);
+  $("innKar").value = ""; $("innBrutto").value = ""; $("innTara").value = ""; $("innNetto").value = "";
+  const now = new Date();
+  $("innDato").value = now.toISOString().split("T")[0];
+  $("innTid").value = now.toTimeString().slice(0, 5);
+  qrInnData = null;
 }
 
 function stopQRScan() {
