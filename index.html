@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#1a1a2e">
-<meta name="description" content="Varelager - Krabbe lagerstyring v2.0.0">
 <title>Varelager</title>
 <link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Varelager%22%2C%22short_name%22%3A%22Varelager%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a1a2e%22%2C%22theme_color%22%3A%22%231a1a2e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%2520viewBox%3D%270%25200%2520192%2520192%27%253E%253Crect%2520fill%3D%27%252300d4ff%27%2520width%3D%27192%27%2520height%3D%27192%27%2520rx%3D%2724%27%2F%253E%253Ctext%2520x%3D%2796%27%2520y%3D%27120%27%2520font-size%3D%27100%27%2520text-anchor%3D%27middle%27%2520fill%3D%27%25231a1a2e%27%253E%25F0%259F%2593%25A6%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
 <style>
@@ -187,18 +185,13 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .kontroll-edit { background: #0f9b6e; color: #fff; }
 .kontroll-move { background: #f39c12; color: #fff; }
 .kontroll-del { background: #e94560; color: #fff; }
-
-/* QR Scanner specific styles */
-#qrReader video {
-  border-radius: 12px;
-}
-#qrReader img[alt="Info icon"] {
-  display: none;
-}
-#qrReader img[alt="Camera based scan"] {
-  display: none;
-}
 </style>
+<base target="_blank">
+<base target="_blank">
+<base target="_blank">
+<base target="_blank">
+<base target="_blank">
+<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -494,7 +487,7 @@ function renderTabContent() {
 }
 
 // ===================== INN =====================
-let qrModeInn = false;  // false = Kar nr mode, true = QR mode
+let qrModeInn = false;
 let currentQrId = "";
 
 function renderInn(content) {
@@ -614,7 +607,7 @@ function showKalkulator() {
   const letters = getUniqueLetters();
   let lettersHtml = '';
   letters.forEach(letter => {
-    lettersHtml += '<button class="kalk-letter-btn ' + (selectedLetter === letter ? 'active' : '') + '" onclick="selectKalkLetter(\'' + letter + \')">' + letter + '</button>';
+    lettersHtml += '<button class="kalk-letter-btn ' + (selectedLetter === letter ? 'active' : '') + '" onclick="selectKalkLetter('' + letter + '')">' + letter + '</button>';
   });
 
   $("kalkulatorArea").innerHTML = '<div class="section" style="margin-top:15px;">' +
@@ -676,7 +669,6 @@ function kalkSearch() {
 }
 
 function processUt(search) {
-  // Search by QR-ID first, then by Kar nr
   const item = DB.items.find(i => {
     const karStr = i.kar ? String(i.kar) : "";
     const qrStr = i.qrId ? String(i.qrId) : "";
@@ -696,8 +688,8 @@ function processUt(search) {
     '<p><strong>Lager:</strong> ' + item.lager + '</p><p><strong>Størrelse:</strong> ' + item.storrelse + '</p>' +
     '<p><strong>Netto:</strong> ' + formatNumber(item.netto) + ' kg</p><p><strong>Inn dato:</strong> ' + formatDateNo(item.dato) + '</p>' +
     '<div class="info-box warning" style="margin-top:10px;">Varen vil flyttes til <strong>Produsert</strong></div>' +
-    '<div class="btn-row"><button class="btn btn-success" onclick="confirmUt(\'' + item.id + \')">✅ Flytt til Produsert</button>' +
-    '<button class="btn btn-danger" onclick="$('utResult').innerHTML=\'\'">Avbryt</button></div></div>';
+    '<div class="btn-row"><button class="btn btn-success" onclick="confirmUt('' + item.id + '')">✅ Flytt til Produsert</button>' +
+    '<button class="btn btn-danger" onclick="$('utResult').innerHTML=''">Avbryt</button></div></div>';
 }
 
 function confirmUt(id) {
@@ -736,7 +728,7 @@ function bulkUt() {
   saveDB(); showToast(ids.length + " varer flyttet til Produsert!"); showLagerOversikt();
 }
 
-// ===================== QR SCANNER FOR UT =====================
+// ===================== QR SCANNER =====================
 let html5QrCode = null;
 
 function loadHtml5Qrcode(callback) {
@@ -2052,7 +2044,8 @@ function exportPDF() {
     levSum[i.lev] = (levSum[i.lev] || 0) + i.netto;
   });
 
-  let html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Varelager Rapport</title>';
+  let html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Varelager Rapport</title>
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Varelager%22%2C%22short_name%22%3A%22Varelager%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a1a2e%22%2C%22theme_color%22%3A%22%231a1a2e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%2520viewBox%3D%270%25200%2520192%2520192%27%253E%253Crect%2520fill%3D%27%252300d4ff%27%2520width%3D%27192%27%2520height%3D%27192%27%2520rx%3D%2724%27%2F%253E%253Ctext%2520x%3D%2796%27%2520y%3D%27120%27%2520font-size%3D%27100%27%2520text-anchor%3D%27middle%27%2520fill%3D%27%25231a1a2e%27%253E%25F0%259F%2593%25A6%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">';
   html += '<style>body{font-family:Arial,sans-serif;padding:20px;}h1{color:#333;}h2{color:#666;font-size:1.1rem;margin-top:20px;}';
   html += 'table{width:100%;border-collapse:collapse;margin-top:10px;font-size:0.9rem;}th,td{border:1px solid #333;padding:6px;text-align:left;}';
   html += 'th{background:#f0f0f0;font-weight:600;}tr:nth-child(even){background:#f9f9f9;}';
@@ -2193,6 +2186,31 @@ function generateInlineQR(text, containerId) {
   container.appendChild(canvas);
 }
 
+// ===================== QR SCANNER =====================
+function startQRScan() {
+  const overlay = document.createElement("div"); overlay.className = "qr-overlay"; overlay.id = "qrOverlay";
+  overlay.innerHTML = '<button class="close-btn" onclick="stopQRScan()">Lukk</button>' +
+    '<video id="qrVideo" autoplay playsinline></video>' +
+    '<div class="qr-manual"><p>QR-kode leses automatisk...</p>' +
+    '<div class="form-group"><label>Eller tast inn manuelt:</label><input type="text" id="qrManualInput" placeholder="QR ID eller Kar nr"></div>' +
+    '<button class="btn btn-primary" onclick="manualQRInput()">Søk</button></div>';
+  document.body.appendChild(overlay);
+
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+    .then(stream => { const video = $("qrVideo"); video.srcObject = stream; qrScanner = stream; })
+    .catch(() => { showToast("Kamera ikke tilgjengelig. Bruk manuell inntasting.", "info"); });
+}
+
+function stopQRScan() {
+  if (qrScanner) { qrScanner.getTracks().forEach(t => t.stop()); qrScanner = null; }
+  const overlay = $("qrOverlay"); if (overlay) overlay.remove();
+}
+
+function manualQRInput() {
+  const val = $("qrManualInput").value.trim(); if (!val) return;
+  stopQRScan(); processUt(val);
+}
+
 // ===================== MODAL =====================
 function showModal(title, content) {
   const modal = document.createElement("div"); modal.className = "modal-overlay"; modal.id = "activeModal";
@@ -2204,6 +2222,7 @@ function closeModal() {
   const modal = $("activeModal"); if (modal) modal.remove(); editingItem = null;
 }
 
+// ===================== START =====================
 // ===================== START =====================
 
 // Service Worker Registration for PWA
