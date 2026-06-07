@@ -988,12 +988,189 @@ function generateRapLev() {
 }
 
 function showRapSalgs() {
-  $("rapContent").innerHTML = `<div class="section"><div class="section-title">Salgsrapport</div><div class="info-box">Kommer snart...</div></div>`;
+  var today = formatDate(new Date());
+  var lagerOptions = LAGRE.filter(function(l) { return l !== "Produsert"; }).map(function(l) {
+    return '<option value="' + l + '"' + (l === "Sortert" ? ' selected' : '') + '>' + l + '</option>';
+  }).join("");
+
+  $("rapContent").innerHTML = '<div class="section">' +
+    '<div class="form-row no-print" style="margin-bottom:10px;">' +
+    '<div class="form-group"><label>Dato fra</label><input type="date" id="salgsFra" value="' + today + '"></div>' +
+    '<div class="form-group"><label>Dato til</label><input type="date" id="salgsTil" value="' + today + '"></div></div>' +
+    '<div class="form-group no-print" style="margin-bottom:10px;"><label>Lager (velg en eller flere)</label>' +
+    '<select id="salgsLager" multiple size="3">' + lagerOptions + '</select></div>' +
+    '<div class="section-title">Salgsrapport</div>' +
+    '<div class="btn-row no-print" style="margin-bottom:15px;"><button class="btn btn-primary" onclick="generateRapSalgs()">Generer</button>' +
+    '<button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>' +
+    '<button class="btn btn-secondary" onclick="exportPDF()">📄 PDF</button></div>' +
+    '<div id="salgsResult"></div></div>';
 }
 
-function showRapLevpak() {
-  $("rapContent").innerHTML = `<div class="section"><div class="section-title">Levendepakking</div><div class="info-box">Kommer snart...</div></div>`;
+function generateRapSalgs() {
+  var fra = $("salgsFra").value;
+  var til = $("salgsTil").value;
+  var selectedLager = Array.from($("salgsLager").selectedOptions).map(function(o) { return o.value; });
+  if (selectedLager.length === 0) { showToast("Velg minst ett lager", "error"); return; }
+
+  var items = DB.items.filter(function(i) {
+    if (selectedLager.indexOf(i.lager) === -1) return false;
+    var d = new Date(i.dato);
+    if (fra && d < new Date(fra)) return false;
+    if (til && d > new Date(til + "T23:59:59")) return false;
+    return true;
+  });
+
+  // Grupper etter leverandør -> størrelse (summer størrelser)
+  var levGroups = {};
+  var total = 0;
+  items.forEach(function(i) {
+    total += i.netto;
+    if (!levGroups[i.lev]) levGroups[i.lev] = { sizes: {}, sum: 0 };
+    if (!levGroups[i.lev].sizes[i.storrelse]) {
+      levGroups[i.lev].sizes[i.storrelse] = { netto: 0, count: 0, dognSum: 0 };
+    }
+    levGroups[i.lev].sizes[i.storrelse].netto += i.netto;
+    levGroups[i.lev].sizes[i.storrelse].count += 1;
+    levGroups[i.lev].sizes[i.storrelse].dognSum += daysBetween(i.dato, new Date());
+    levGroups[i.lev].sum += i.netto;
+  });
+
+  // Sorter leverandører etter sum (descending)
+  var levArray = [];
+  for (var lev in levGroups) { levArray.push({ lev: lev, data: levGroups[lev] }); }
+  levArray.sort(function(a, b) { return b.data.sum - a.data.sum; });
+
+  // === SUM PR. LEVERANDØR ØVERST ===
+  var html = '<div class="section" style="margin-bottom:15px;"><div class="section-title">Sum pr. leverandør</div>';
+  levArray.forEach(function(l) {
+    html += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #0f3460;"><span>' + l.lev + '</span><span style="color:#00d4ff;font-weight:600;">' + formatNumber(l.data.sum) + ' kg</span></div>';
+  });
+  html += '<div style="display:flex;justify-content:space-between;padding:6px 0;margin-top:5px;border-top:2px solid #00d4ff;"><span style="font-weight:700;">TOTALT</span><span style="color:#00d4ff;font-weight:700;">' + formatNumber(total) + ' kg</span></div></div>';
+
+  // === DETALJER PER LEVERANDØR - SUMMERT ETTER STØRRELSE ===
+  levArray.forEach(function(l) {
+    html += '<div class="section" style="margin-top:15px;"><div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0f3460;padding-bottom:5px;margin-bottom:8px;">' +
+      '<span style="font-weight:700;font-size:1rem;">' + l.lev + '</span>' +
+      '<span style="color:#00d4ff;font-weight:700;">' + formatNumber(l.data.sum) + ' kg</span></div>' +
+      '<table class="data-table"><thead><tr><th>Størrelse</th><th>Fordeling %</th><th>Netto</th><th>Snitt Døgn</th><th>Lager</th></tr></thead><tbody>';
+
+    // Gå gjennom summerte størrelser for denne leverandøren
+    for (var size in l.data.sizes) {
+      var sizeData = l.data.sizes[size];
+      var pct = l.data.sum > 0 ? ((sizeData.netto / l.data.sum) * 100).toFixed(0) : 0;
+      var snittDogn = sizeData.count > 0 ? (sizeData.dognSum / sizeData.count).toFixed(1) : 0;
+      html += '<tr><td>' + size + '</td><td>' + pct + ' %</td><td>' + formatNumber(sizeData.netto) + '</td><td>' + snittDogn + '</td><td>' + selectedLager.join(", ") + '</td></tr>';
+    }
+    html += '</tbody></table></div>';
+  });
+
+  $("salgsResult").innerHTML = html;
 }
+
+
+function showRapLevpak() {
+  var today = formatDate(new Date());
+  var lagerOptions = LAGRE.filter(function(l) { return l !== "Produsert"; }).map(function(l) {
+    return '<option value="' + l + '"' + (l === "Sortert" ? ' selected' : '') + '>' + l + '</option>';
+  }).join("");
+
+  $("rapContent").innerHTML = '<div class="section">' +
+    '<div class="form-row no-print" style="margin-bottom:10px;">' +
+    '<div class="form-group"><label>Dato fra</label><input type="date" id="levpakFra" value="' + today + '"></div>' +
+    '<div class="form-group"><label>Dato til</label><input type="date" id="levpakTil" value="' + today + '"></div></div>' +
+    '<div class="form-group no-print" style="margin-bottom:10px;"><label>Lager (velg en eller flere)</label>' +
+    '<select id="levpakLager" multiple size="3">' + lagerOptions + '</select></div>' +
+    '<div class="section-title">Rapport, hele lageret.</div>' +
+    '<div style="color:#00d4ff;font-size:0.9rem;margin-bottom:10px;">Sum pr. leverandør samlet på størrelser</div>' +
+    '<div class="btn-row no-print" style="margin-bottom:15px;"><button class="btn btn-primary" onclick="generateRapLevpak()">Generer</button>' +
+    '<button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>' +
+    '<button class="btn btn-secondary" onclick="exportPDF()">📄 PDF</button></div>' +
+    '<div id="levpakResult"></div></div>';
+}
+
+function generateRapLevpak() {
+  var fra = $("levpakFra").value;
+  var til = $("levpakTil").value;
+  var selectedLager = Array.from($("levpakLager").selectedOptions).map(function(o) { return o.value; });
+  if (selectedLager.length === 0) { showToast("Velg minst ett lager", "error"); return; }
+
+  var items = DB.items.filter(function(i) {
+    if (selectedLager.indexOf(i.lager) === -1) return false;
+    var d = new Date(i.dato);
+    if (fra && d < new Date(fra)) return false;
+    if (til && d > new Date(til + "T23:59:59")) return false;
+    return true;
+  });
+
+  // Grupper etter leverandør -> størrelse (summer størrelser)
+  var levGroups = {};
+  var totalNetto = 0;
+  var totalBox = 0;
+  items.forEach(function(i) {
+    totalNetto += i.netto;
+    if (!levGroups[i.lev]) levGroups[i.lev] = { sizes: {}, sum: 0, boxSum: 0 };
+    if (!levGroups[i.lev].sizes[i.storrelse]) {
+      levGroups[i.lev].sizes[i.storrelse] = { netto: 0, count: 0, dognSum: 0, box: 0 };
+    }
+    levGroups[i.lev].sizes[i.storrelse].netto += i.netto;
+    levGroups[i.lev].sizes[i.storrelse].count += 1;
+    levGroups[i.lev].sizes[i.storrelse].dognSum += daysBetween(i.dato, new Date());
+    levGroups[i.lev].sum += i.netto;
+  });
+
+  // Beregn box for hver størrelse (avrund ALLTID ned)
+  for (var lev in levGroups) {
+    for (var size in levGroups[lev].sizes) {
+      var kgBox = KG_I_BOX[selectedLager[0] + "_" + size] || KG_I_BOX["Sortert_" + size] || KG_I_BOX["Kjøpslager_" + size] || "";
+      if (kgBox) {
+        var kgBoxNum = parseFloat(kgBox.replace(",", "."));
+        if (kgBoxNum > 0) {
+          var boxCount = Math.floor(levGroups[lev].sizes[size].netto / kgBoxNum);
+          levGroups[lev].sizes[size].box = boxCount;
+          levGroups[lev].boxSum += boxCount;
+          totalBox += boxCount;
+        }
+      }
+    }
+  }
+
+  // Sorter leverandører etter sum (descending)
+  var levArray = [];
+  for (var lev in levGroups) { levArray.push({ lev: lev, data: levGroups[lev] }); }
+  levArray.sort(function(a, b) { return b.data.sum - a.data.sum; });
+
+  // === TOTAL ØVERST ===
+  var html = '<div class="section" style="margin-bottom:15px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:2px solid #00d4ff;">' +
+    '<span style="font-weight:700;font-size:1.1rem;">TOTAL</span>' +
+    '<span style="color:#00d4ff;font-weight:700;">' + totalBox + ' box</span>' +
+    '<span style="color:#00d4ff;font-weight:700;">' + formatNumber(totalNetto) + ' kg</span></div></div>';
+
+  // === PALLELISTE ===
+  html += '<div style="margin-bottom:10px;font-size:0.9rem;">Palleliste (' + items.length + ' registreringer)</div>';
+
+  // === DETALJER PER LEVERANDØR ===
+  levArray.forEach(function(l) {
+    html += '<div class="section" style="margin-top:15px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0f3460;padding-bottom:5px;margin-bottom:8px;">' +
+      '<span style="font-weight:700;font-size:1rem;">' + l.lev + '</span>' +
+      '<span style="color:#00d4ff;font-weight:700;">' + l.data.boxSum + ' box</span>' +
+      '<span style="color:#00d4ff;font-weight:700;">' + formatNumber(l.data.sum) + ' kg</span></div>' +
+      '<table class="data-table"><thead><tr><th>Kar</th><th>Størrelse</th><th>Fordeling %</th><th>Netto</th><th>Ant. Box</th><th>Leverandør</th><th>Snitt Døgn</th><th>Lager</th></tr></thead><tbody>';
+
+    for (var size in l.data.sizes) {
+      var sizeData = l.data.sizes[size];
+      var pct = l.data.sum > 0 ? ((sizeData.netto / l.data.sum) * 100).toFixed(0) : 0;
+      var snittDogn = sizeData.count > 0 ? (sizeData.dognSum / sizeData.count).toFixed(1) : 0;
+      var boxStr = sizeData.box > 0 ? sizeData.box.toString() : "0";
+      html += '<tr><td></td><td>' + size + '</td><td>' + pct + ' %</td><td>' + formatNumber(sizeData.netto) + '</td><td>' + boxStr + '</td><td>' + l.lev + '</td><td>' + snittDogn + '</td><td>' + selectedLager.join(", ") + '</td></tr>';
+    }
+    html += '</tbody></table></div>';
+  });
+
+  $("levpakResult").innerHTML = html;
+}
+
 
 function showRapProd() {
   var today = formatDate(new Date());
