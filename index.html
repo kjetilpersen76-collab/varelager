@@ -1912,42 +1912,61 @@ function startQRScanInn(dato, tid, lager, lev, storrelse, kar, brutto, tara, net
 
   const overlay = document.createElement("div"); overlay.className = "qr-overlay"; overlay.id = "qrOverlayInn";
   overlay.innerHTML = `<button class="close-btn" onclick="stopQRScanInn()">Lukk</button>` +
-    `<div id="qrReaderInn" style="width:100%;max-width:400px;height:300px;margin:0 auto;border-radius:12px;overflow:hidden;"></div>` +
+    `<div style="width:100%;max-width:400px;margin:0 auto;text-align:center;">` +
+    `<video id="qrVideoInn" autoplay playsinline muted style="width:100%;max-width:400px;height:300px;border-radius:12px;background:#000;object-fit:cover;"></video>` +
+    `<canvas id="qrCanvasInn" style="display:none;"></canvas>` +
+    `<p id="qrStatusInn" style="color:#00d4ff;margin-top:10px;font-size:0.9rem;">Venter på kamera...</p>` +
+    `</div>` +
     `<div class="qr-manual"><p>Scan QR-kode på pallen...</p>` +
     `<div class="form-group"><label>Eller tast inn QR-kode manuelt:</label><input type="text" id="qrManualInputInn" placeholder="QR ID"></div>` +
     `<button class="btn btn-primary" onclick="manualQRInputInn()">Lagre med QR</button></div>`;
   document.body.appendChild(overlay);
 
-  // Last inn html5-qrcode hvis ikke allerede lastet
-  loadHtml5Qrcode(function() {
-    if (typeof Html5Qrcode !== 'undefined') {
-      try {
-        const qrReader = new Html5Qrcode("qrReaderInn");
-        qrReader.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 250, height: 250 } },
-          function(decodedText) {
-            qrReader.stop().then(() => {
-              stopQRScanInn();
-              saveInnWithQR(decodedText);
-            }).catch(() => {
-              stopQRScanInn();
-              saveInnWithQR(decodedText);
+  // Prøv å åpne kamera direkte med getUserMedia
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+    .then(function(stream) {
+      const video = document.getElementById("qrVideoInn");
+      video.srcObject = stream;
+      qrScanner = stream;
+      $("qrStatusInn").textContent = "Kamera aktiv - hold QR-kode foran...";
+
+      // Prøv å laste html5-qrcode og bruke den
+      loadHtml5Qrcode(function() {
+        if (typeof Html5Qrcode !== 'undefined') {
+          try {
+            const qrReader = new Html5Qrcode("qrVideoInn");
+            qrReader.start(
+              { facingMode: "environment" },
+              { fps: 5, qrbox: { width: 250, height: 250 } },
+              function(decodedText) {
+                qrReader.stop().then(function() {
+                  stopQRScanInn();
+                  saveInnWithQR(decodedText);
+                }).catch(function() {
+                  stopQRScanInn();
+                  saveInnWithQR(decodedText);
+                });
+              },
+              function(errorMessage) { /* ignorer */ }
+            ).catch(function(err) {
+              console.log("html5-qrcode feil:", err);
+              // Fallback: fortsett med video men uten QR-lesing
+              $("qrStatusInn").textContent = "Kamera aktiv. Bruk manuell inntasting hvis QR ikke leses.";
             });
-          },
-          function(errorMessage) { /* ignorer scan-feil */ }
-        ).catch(err => {
-          console.log("QR start feil:", err);
-          showToast("Kamera ikke tilgjengelig. Bruk manuell inntasting.", "info");
-        });
-      } catch(e) {
-        console.log("QR init feil:", e);
-        showToast("QR-scanner feil. Bruk manuell inntasting.", "info");
-      }
-    } else {
-      showToast("QR-scanner ikke lastet. Bruk manuell inntasting.", "info");
-    }
-  });
+          } catch(e) {
+            console.log("html5-qrcode init feil:", e);
+            $("qrStatusInn").textContent = "Kamera aktiv. Bruk manuell inntasting.";
+          }
+        } else {
+          $("qrStatusInn").textContent = "Kamera aktiv. QR-bibliotek ikke lastet. Bruk manuell inntasting.";
+        }
+      });
+    })
+    .catch(function(err) {
+      console.log("Kamera feil:", err);
+      $("qrStatusInn").textContent = "Kamera ikke tilgjengelig. Bruk manuell inntasting.";
+      showToast("Kamera ikke tilgjengelig. Bruk manuell inntasting.", "info");
+    });
 }
 
 function stopQRScanInn() {
@@ -1980,7 +1999,16 @@ function saveInnWithQR(qrId) {
   };
 
   DB.items.push(item); saveDB(); showToast("Vare lagret med QR: " + qrId);
-  $("innKar").value = ""; $("innBrutto").value = ""; $("innTara").value = ""; $("innNetto").value = "";
+
+  // Tøm alle feltene
+  $("innKar").value = "";
+  $("innBrutto").value = "";
+  $("innTara").value = "";
+  $("innNetto").value = "";
+  $("innLager").value = "";
+  $("innLev").value = "";
+  $("innStorrelse").innerHTML = '<option value="">Velg størrelse...</option>';
+
   const now = new Date();
   $("innDato").value = now.toISOString().split("T")[0];
   $("innTid").value = now.toTimeString().slice(0, 5);
