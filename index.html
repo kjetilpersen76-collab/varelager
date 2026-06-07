@@ -1516,7 +1516,7 @@ function renderSynk(content) {
 }
 
 function getGScriptCode() {
-  return `function doGet(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var action = e.parameter.action;\n  var callback = e.parameter.callback;\n  var result;\n  \n  try {\n    if (action === "read") {\n      var data = sheet.getDataRange().getValues();\n      result = {success: true, data: data};\n    }\n    else if (action === "write") {\n      var jsonData = e.parameter.data;\n      if (!jsonData) {\n        result = {success: false, error: "Ingen data mottatt"};\n      } else {\n        try {\n          var items = JSON.parse(jsonData);\n          if (!Array.isArray(items)) {\n            result = {success: false, error: "Data er ikke en array"};\n          } else {\n            sheet.clear();\n            var headers = ["ID", "QR ID", "Kar nr", "Dato", "Lager", "Leverand\u00f8r", "St\u00f8rrelse", "Brutto", "Tara", "Netto", "Ut dato", "Registrert av"];\n            sheet.appendRow(headers);\n            items.forEach(function(row) {\n              sheet.appendRow([row.id, row.qrId || "", row.kar || "", row.dato, row.lager, row.lev, row.storrelse, row.brutto, row.tara, row.netto, row.utDato || "", row.userInn || ""]);\n            });\n            result = {success: true, count: items.length};\n          }\n        } catch (parseErr) {\n          result = {success: false, error: "JSON parse feil: " + parseErr.message};\n        }\n      }\n    }\n    else {\n      var data = sheet.getDataRange().getValues();\n      result = {success: true, data: data};\n    }\n  } catch (err) {\n    result = {success: false, error: err.message};\n  }\n  \n  var output = ContentService.createTextOutput(callback + "(" + JSON.stringify(result) + ");");\n  output.setMimeType(ContentService.MimeType.JAVASCRIPT);\n  return output;\n}\n\nfunction doPost(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var action = e.parameter.action;\n  var callback = e.parameter.callback;\n  var result;\n  \n  try {\n    if (action === "write") {\n      var jsonData = e.postData ? e.postData.contents : e.parameter.data;\n      if (!jsonData) {\n        result = {success: false, error: "Ingen data mottatt"};\n      } else {\n        try {\n          var items = JSON.parse(jsonData);\n          sheet.clear();\n          var headers = ["ID", "QR ID", "Kar nr", "Dato", "Lager", "Leverand\u00f8r", "St\u00f8rrelse", "Brutto", "Tara", "Netto", "Ut dato", "Registrert av"];\n          sheet.appendRow(headers);\n          items.forEach(function(row) {\n            sheet.appendRow([row.id, row.qrId || "", row.kar || "", row.dato, row.lager, row.lev, row.storrelse, row.brutto, row.tara, row.netto, row.utDato || "", row.userInn || ""]);\n          });\n          result = {success: true, count: items.length};\n        } catch (parseErr) {\n          result = {success: false, error: "JSON parse feil: " + parseErr.message};\n        }\n      }\n    } else {\n      result = {success: false, error: "Ukjent action"};\n    }\n  } catch (err) {\n    result = {success: false, error: err.message};\n  }\n  \n  if (callback) {\n    var output = ContentService.createTextOutput(callback + "(" + JSON.stringify(result) + ");");\n    output.setMimeType(ContentService.MimeType.JAVASCRIPT);\n    return output;\n  } else {\n    return ContentService.createTextOutput(JSON.stringify(result))\n      .setMimeType(ContentService.MimeType.JSON);\n  }\n}\n\nfunction doOptions(e) {\n  return ContentService.createTextOutput("")\n    .setHeaders({\n      'Access-Control-Allow-Origin': '*',\n      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',\n      'Access-Control-Allow-Headers': 'Content-Type'\n    });\n}`;
+  return `function doGet(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var action = e.parameter.action;\n  var callback = e.parameter.callback;\n  var result;\n  \n  try {\n    if (action === "read") {\n      var data = sheet.getDataRange().getValues();\n      result = {success: true, data: data};\n    }\n    else if (action === "write") {\n      var jsonData = e.parameter.data;\n      if (!jsonData) {\n        result = {success: false, error: "Ingen data mottatt"};\n      } else {\n        try {\n          var items = JSON.parse(jsonData);\n          if (!Array.isArray(items)) {\n            result = {success: false, error: "Data er ikke en array"};\n          } else {\n            sheet.clear();\n            var headers = ["ID", "QR ID", "Kar nr", "Dato", "Lager", "Leverand\u00f8r", "St\u00f8rrelse", "Brutto", "Tara", "Netto", "Ut dato", "Registrert av"];\n            sheet.appendRow(headers);\n            items.forEach(function(row) {\n              sheet.appendRow([row.id, row.qrId || "", row.kar || "", row.dato, row.lager, row.lev, row.storrelse, row.brutto, row.tara, row.netto, row.utDato || "", row.userInn || ""]);\n            });\n            result = {success: true, count: items.length};\n          }\n        } catch (parseErr) {\n          result = {success: false, error: "JSON parse feil: " + parseErr.message};\n        }\n      }\n    }\n    else {\n      var data = sheet.getDataRange().getValues();\n      result = {success: true, data: data};\n    }\n  } catch (err) {\n    result = {success: false, error: err.message};\n  }\n  \n  var output = ContentService.createTextOutput(callback + "(" + JSON.stringify(result) + ");");\n  output.setMimeType(ContentService.MimeType.JAVASCRIPT);\n  return output;\n}\n\nfunction doPost(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var action = e.parameter.action;\n  var result;\n  \n  try {\n    if (action === "write") {\n      var jsonData = e.postData ? e.postData.contents : "";\n      if (!jsonData) {\n        result = {success: false, error: "Ingen data mottatt i POST"};\n      } else {\n        try {\n          var items = JSON.parse(jsonData);\n          sheet.clear();\n          var headers = ["ID", "QR ID", "Kar nr", "Dato", "Lager", "Leverand\u00f8r", "St\u00f8rrelse", "Brutto", "Tara", "Netto", "Ut dato", "Registrert av"];\n          sheet.appendRow(headers);\n          items.forEach(function(row) {\n            sheet.appendRow([row.id, row.qrId || "", row.kar || "", row.dato, row.lager, row.lev, row.storrelse, row.brutto, row.tara, row.netto, row.utDato || "", row.userInn || ""]);\n            });\n          result = {success: true, count: items.length};\n        } catch (parseErr) {\n          result = {success: false, error: "JSON parse feil: " + parseErr.message + " | Data: " + jsonData.substring(0, 100)};\n        }\n      }\n    } else {\n      result = {success: false, error: "Ukjent action: " + action};\n    }\n  } catch (err) {\n    result = {success: false, error: err.message};\n  }\n  \n  return ContentService.createTextOutput(JSON.stringify(result))\n    .setMimeType(ContentService.MimeType.JSON);\n}\n\nfunction doOptions(e) {\n  return ContentService.createTextOutput("")\n    .setHeaders({\n      'Access-Control-Allow-Origin': '*',\n      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',\n      'Access-Control-Allow-Headers': 'Content-Type'\n    });\n}`;
 }
 
 function copyGScriptCode() {
@@ -1590,27 +1590,28 @@ function syncToGScript() {
     return;
   }
 
-  // Prøv POST først
-  fetch(url, {
+  // Prøv POST først med ren JSON
+  fetch(url + "?action=write", {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'action=write&data=' + encodeURIComponent(jsonData)
+    headers: { 'Content-Type': 'application/json' },
+    body: jsonData
   })
   .then(function(response) { return response.text(); })
   .then(function(text) {
     var data;
     try {
+      data = JSON.parse(text);
+    } catch (e) {
       var match = text.match(/^\w+\((.*)\);?$/s);
       if (match) data = JSON.parse(match[1]);
-      else data = JSON.parse(text);
-    } catch (e) { data = null; }
+      else data = null;
+    }
 
     if (data && data.success) {
       LAST_SYNC = new Date();
       updateSyncIndicator('ok');
       console.log('Auto-sync OK: ' + data.count + ' rader');
     } else {
-      // Fallback til JSONP
       syncToGScriptJSONP(url, jsonData);
     }
     IS_SYNCING = false;
@@ -1660,29 +1661,22 @@ function sendToGScript() {
 
   const jsonData = JSON.stringify(DB.items);
 
-  // Prøv POST først (krever oppdatert GScript med doPost)
-  fetch(url, {
+  // Prøv POST først med ren JSON
+  fetch(url + "?action=write", {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'action=write&data=' + encodeURIComponent(jsonData)
+    headers: { 'Content-Type': 'application/json' },
+    body: jsonData
   })
   .then(function(response) { return response.text(); })
   .then(function(text) {
-    // JSONP-respons kan være omsluttet i callback, prøv å parse
     var data;
     try {
-      // Hvis respons er JSONP-format: callback({...});
-      var match = text.match(/^\w+\((.*)\);?$/s);
-      if (match) {
-        data = JSON.parse(match[1]);
-      } else {
-        data = JSON.parse(text);
-      }
+      data = JSON.parse(text);
     } catch (e) {
-      // Hvis ikke JSON, sjekk om det er suksess på annen måte
-      $("synkStatus").innerHTML = `<div style="color:#f39c12;">⚠️ Uventet respons, prøver JSONP...</div>`;
-      sendToGScriptJSONP(url, jsonData);
-      return;
+      // Kan være JSONP-format
+      var match = text.match(/^\w+\((.*)\);?$/s);
+      if (match) data = JSON.parse(match[1]);
+      else data = null;
     }
 
     if (data && data.success) {
@@ -1692,13 +1686,11 @@ function sendToGScript() {
       var errMsg = data && data.error ? data.error : "Ukjent feil";
       $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Feil: ${errMsg}</div>`;
       showToast("Send feilet: " + errMsg, "error");
-      // Prøv JSONP som fallback
       sendToGScriptJSONP(url, jsonData);
     }
   })
   .catch(function(err) {
     console.log("POST feilet:", err);
-    // Fallback til JSONP
     sendToGScriptJSONP(url, jsonData);
   });
 }
