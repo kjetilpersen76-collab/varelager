@@ -192,7 +192,13 @@ let kalkInput = "";
 let selectedLetter = "";
 
 function $(id) { return document.getElementById(id); }
-function saveDB() { localStorage.setItem("varelager_db", JSON.stringify(DB)); }
+function saveDB() { 
+  localStorage.setItem("varelager_db", JSON.stringify(DB)); 
+  // Auto-sync til Google Sheets hvis URL er satt
+  if (DB.settings.gscriptUrl && !IS_SYNCING) {
+    setTimeout(function() { syncToGScript(); }, 100);
+  }
+}
 function loadDB() {
   const data = localStorage.getItem("varelager_db");
   if (data) { 
@@ -1364,6 +1370,54 @@ function testGScript() {
   }, 10000);
 }
 
+function syncToGScript() {
+  if (!DB.settings.gscriptUrl || IS_SYNCING) return;
+  IS_SYNCING = true;
+  updateSyncIndicator('syncing');
+
+  var url = DB.settings.gscriptUrl;
+  var jsonData = JSON.stringify(DB.items);
+
+  // Hvis for mye data, bruk batching eller skip
+  if (jsonData.length > 7000) {
+    console.log('For mye data for auto-sync, bruk manuell sync');
+    IS_SYNCING = false;
+    updateSyncIndicator('error');
+    return;
+  }
+
+  var script = document.createElement("script");
+  var callbackName = "gscriptSyncCallback_" + Date.now();
+  window[callbackName] = function(data) {
+    delete window[callbackName];
+    if (script.parentNode) script.parentNode.removeChild(script);
+    if (data && data.success) {
+      LAST_SYNC = new Date();
+      updateSyncIndicator('ok');
+      console.log('Auto-sync OK: ' + data.count + ' rader');
+    } else {
+      updateSyncIndicator('error');
+      console.log('Auto-sync feilet');
+    }
+    IS_SYNCING = false;
+  };
+  script.onerror = function() {
+    delete window[callbackName];
+    if (script.parentNode) script.parentNode.removeChild(script);
+    updateSyncIndicator('error');
+    IS_SYNCING = false;
+  };
+  script.src = url + "?action=write&data=" + encodeURIComponent(jsonData) + "&callback=" + callbackName;
+  document.head.appendChild(script);
+  setTimeout(function() {
+    if (window[callbackName]) {
+      delete window[callbackName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      IS_SYNCING = false;
+    }
+  }, 15000);
+}
+
 function sendToGScript() {
   const url = DB.settings.gscriptUrl;
   if (!url) { showToast("Lagre URL først", "error"); return; }
@@ -1419,17 +1473,28 @@ function fetchFromGScript(silent) {
     if (script.parentNode) script.parentNode.removeChild(script);
     if (data && data.success && data.data) {
       var rows = data.data;
-      DB.items = [];
+      // Merge: Behold lokale data, oppdater med eksterne data
+      var existingIds = new Set(DB.items.map(function(item) { return item.id; }));
+      var newItems = [];
       for (var i = 1; i < rows.length; i++) {
         var r = rows[i];
         if (!r[0]) continue;
-        DB.items.push({
+        var newItem = {
           id: r[0], qrId: r[1] || "", kar: r[2] || "", dato: r[3] || new Date().toISOString(),
           lager: r[4] || "Kjøpslager", lev: r[5] || "", storrelse: r[6] || "",
           brutto: parseFloat(r[7]) || 0, tara: parseFloat(r[8]) || 0, netto: parseFloat(r[9]) || 0,
           utDato: r[10] || null, userInn: r[11] || (currentUser ? currentUser.name : "")
-        });
+        };
+        // Hvis item finnes lokalt, oppdater den; ellers legg til
+        var existingIndex = DB.items.findIndex(function(item) { return item.id === newItem.id; });
+        if (existingIndex >= 0) {
+          DB.items[existingIndex] = newItem; // Oppdater eksisterende
+        } else {
+          newItems.push(newItem); // Legg til som ny
+        }
       }
+      // Legg til nye items fra Google Sheets
+      DB.items = DB.items.concat(newItems);
       saveDB();
       LAST_SYNC = new Date();
       updateSyncIndicator("ok");
