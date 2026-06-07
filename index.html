@@ -155,6 +155,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 </style>
 <base target="_blank">
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 <div id="app"></div>
@@ -185,6 +186,7 @@ let KG_I_BOX = {};
 let DB = { users: [], items: [], settings: { gscriptUrl: "" }, customLagre: null, customLeverandorer: null, customStorrelser: null };
 let currentUser = null, currentPin = "", selectedUserId = null;
 let currentTab = "inn", editingItem = null, qrScanner = null;
+let LAST_SYNC = null, SYNC_QUEUE = [], IS_SYNCING = false;
 let currentRapSubTab = "total";
 let kalkInput = "";
 let selectedLetter = "";
@@ -979,6 +981,14 @@ function generateRapLev() {
   $("rapLevResult").innerHTML = html;
 }
 
+function showRapSalgs() {
+  $("rapContent").innerHTML = `<div class="section"><div class="section-title">Salgsrapport</div><div class="info-box">Kommer snart...</div></div>`;
+}
+
+function showRapLevpak() {
+  $("rapContent").innerHTML = `<div class="section"><div class="section-title">Levendepakking</div><div class="info-box">Kommer snart...</div></div>`;
+}
+
 function showRapProd() {
   var today = formatDate(new Date());
   $("rapContent").innerHTML = `<div class="section">` +
@@ -1246,6 +1256,22 @@ function deleteLeverandor(idx) {
 }
 
 // ===================== SYNK =====================
+function backgroundSync() {
+  if (!DB.settings.gscriptUrl || IS_SYNCING) return;
+  IS_SYNCING = true;
+  updateSyncIndicator('syncing');
+  fetchFromGScript(true);
+}
+
+function updateSyncIndicator(status) {
+  const indicator = document.getElementById('syncIndicator');
+  if (!indicator) return;
+  if (status === 'ok') indicator.textContent = '✅';
+  else if (status === 'error') indicator.textContent = '❌';
+  else if (status === 'syncing') indicator.textContent = '🔄';
+  else indicator.textContent = '○';
+}
+
 function renderSynk(content) {
   var syncStatus = LAST_SYNC ? "Sist sync: " + formatDateTime(LAST_SYNC) : "Aldri sync'et";
   var queueCount = SYNC_QUEUE.length;
