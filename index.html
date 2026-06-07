@@ -157,6 +157,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 <base target="_blank">
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 <div id="app"></div>
@@ -189,6 +190,7 @@ let currentUser = null, currentPin = "", selectedUserId = null;
 let currentTab = "inn", editingItem = null, qrScanner = null;
 let LAST_SYNC = null, SYNC_QUEUE = [], IS_SYNCING = false;
 let currentRapSubTab = "total";
+let pendingQRId = "";
 let kalkInput = "";
 let selectedLetter = "";
 
@@ -373,7 +375,15 @@ function saveInn(withQR) {
   const lev = $("innLev").value;
   const storrelse = $("innStorrelse").value;
   const kar = $("innKar").value.trim();
-  const qrId = $("innQrId") ? $("innQrId").value.trim() : "";
+  // Les QR-ID fra feltet, med fallback til pendingQRId
+  let qrId = "";
+  if ($("innQrId")) {
+    qrId = $("innQrId").value.trim();
+  }
+  // Hvis feltet er tomt men vi har en pending QR-ID, bruk den
+  if (!qrId && pendingQRId) {
+    qrId = pendingQRId;
+  }
   const brutto = parseNumber($("innBrutto").value);
   const tara = parseNumber($("innTara").value);
   const netto = parseNumber($("innNetto").value);
@@ -396,6 +406,7 @@ function saveInn(withQR) {
   DB.items.push(item); saveDB(); showToast("Vare lagret!");
   $("innKar").value = ""; $("innQrId").value = ""; $("innBrutto").value = ""; $("innTara").value = ""; $("innNetto").value = "";
   $("qrLabel").textContent = "QR ID"; $("qrLabel").style.color = "#888";
+  pendingQRId = ""; // Tøm pending QR-ID
   const now = new Date();
   $("innDato").value = now.toISOString().split("T")[0];
   $("innTid").value = now.toTimeString().slice(0, 5);
@@ -1505,7 +1516,7 @@ function renderSynk(content) {
 }
 
 function getGScriptCode() {
-  return `function doGet(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var action = e.parameter.action;\n  var callback = e.parameter.callback;\n  var result;\n  if (action === "read") {\n    var data = sheet.getDataRange().getValues();\n    result = {success: true, data: data};\n  }\n  else if (action === "write") {\n    var jsonData = e.parameter.data;\n    var items = JSON.parse(jsonData);\n    sheet.clear();\n    var headers = ["ID", "QR ID", "Kar nr", "Dato", "Lager", "Leverandør", "Størrelse", "Brutto", "Tara", "Netto", "Ut dato", "Registrert av"];\n    sheet.appendRow(headers);\n    items.forEach(function(row) {\n      sheet.appendRow([row.id, row.qrId || "", row.kar || "", row.dato, row.lager, row.lev, row.storrelse, row.brutto, row.tara, row.netto, row.utDato || "", row.userInn || ""]);\n    });\n    result = {success: true, count: items.length};\n  }\n  else {\n    var data = sheet.getDataRange().getValues();\n    result = data;\n  }\n  var output = ContentService.createTextOutput(callback + "(" + JSON.stringify(result) + ");");\n  output.setMimeType(ContentService.MimeType.JAVASCRIPT);\n  return output;\n}\nfunction doOptions(e) {\n  return ContentService.createTextOutput("")\n    .setHeaders({\n      'Access-Control-Allow-Origin': '*',\n      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',\n      'Access-Control-Allow-Headers': 'Content-Type'\n    });\n}`;
+  return `function doGet(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var action = e.parameter.action;\n  var callback = e.parameter.callback;\n  var result;\n  \n  try {\n    if (action === "read") {\n      var data = sheet.getDataRange().getValues();\n      result = {success: true, data: data};\n    }\n    else if (action === "write") {\n      var jsonData = e.parameter.data;\n      if (!jsonData) {\n        result = {success: false, error: "Ingen data mottatt"};\n      } else {\n        try {\n          var items = JSON.parse(jsonData);\n          if (!Array.isArray(items)) {\n            result = {success: false, error: "Data er ikke en array"};\n          } else {\n            sheet.clear();\n            var headers = ["ID", "QR ID", "Kar nr", "Dato", "Lager", "Leverand\u00f8r", "St\u00f8rrelse", "Brutto", "Tara", "Netto", "Ut dato", "Registrert av"];\n            sheet.appendRow(headers);\n            items.forEach(function(row) {\n              sheet.appendRow([row.id, row.qrId || "", row.kar || "", row.dato, row.lager, row.lev, row.storrelse, row.brutto, row.tara, row.netto, row.utDato || "", row.userInn || ""]);\n            });\n            result = {success: true, count: items.length};\n          }\n        } catch (parseErr) {\n          result = {success: false, error: "JSON parse feil: " + parseErr.message};\n        }\n      }\n    }\n    else {\n      var data = sheet.getDataRange().getValues();\n      result = {success: true, data: data};\n    }\n  } catch (err) {\n    result = {success: false, error: err.message};\n  }\n  \n  var output = ContentService.createTextOutput(callback + "(" + JSON.stringify(result) + ");");\n  output.setMimeType(ContentService.MimeType.JAVASCRIPT);\n  return output;\n}\n\nfunction doPost(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var action = e.parameter.action;\n  var callback = e.parameter.callback;\n  var result;\n  \n  try {\n    if (action === "write") {\n      var jsonData = e.postData ? e.postData.contents : e.parameter.data;\n      if (!jsonData) {\n        result = {success: false, error: "Ingen data mottatt"};\n      } else {\n        try {\n          var items = JSON.parse(jsonData);\n          sheet.clear();\n          var headers = ["ID", "QR ID", "Kar nr", "Dato", "Lager", "Leverand\u00f8r", "St\u00f8rrelse", "Brutto", "Tara", "Netto", "Ut dato", "Registrert av"];\n          sheet.appendRow(headers);\n          items.forEach(function(row) {\n            sheet.appendRow([row.id, row.qrId || "", row.kar || "", row.dato, row.lager, row.lev, row.storrelse, row.brutto, row.tara, row.netto, row.utDato || "", row.userInn || ""]);\n          });\n          result = {success: true, count: items.length};\n        } catch (parseErr) {\n          result = {success: false, error: "JSON parse feil: " + parseErr.message};\n        }\n      }\n    } else {\n      result = {success: false, error: "Ukjent action"};\n    }\n  } catch (err) {\n    result = {success: false, error: err.message};\n  }\n  \n  if (callback) {\n    var output = ContentService.createTextOutput(callback + "(" + JSON.stringify(result) + ");");\n    output.setMimeType(ContentService.MimeType.JAVASCRIPT);\n    return output;\n  } else {\n    return ContentService.createTextOutput(JSON.stringify(result))\n      .setMimeType(ContentService.MimeType.JSON);\n  }\n}\n\nfunction doOptions(e) {\n  return ContentService.createTextOutput("")\n    .setHeaders({\n      'Access-Control-Allow-Origin': '*',\n      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',\n      'Access-Control-Allow-Headers': 'Content-Type'\n    });\n}`;
 }
 
 function copyGScriptCode() {
@@ -1571,7 +1582,7 @@ function syncToGScript() {
   var url = DB.settings.gscriptUrl;
   var jsonData = JSON.stringify(DB.items);
 
-  // Hvis for mye data, bruk batching eller skip
+  // Hvis for mye data, skip auto-sync
   if (jsonData.length > 7000) {
     console.log('For mye data for auto-sync, bruk manuell sync');
     IS_SYNCING = false;
@@ -1579,6 +1590,37 @@ function syncToGScript() {
     return;
   }
 
+  // Prøv POST først
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'action=write&data=' + encodeURIComponent(jsonData)
+  })
+  .then(function(response) { return response.text(); })
+  .then(function(text) {
+    var data;
+    try {
+      var match = text.match(/^\w+\((.*)\);?$/s);
+      if (match) data = JSON.parse(match[1]);
+      else data = JSON.parse(text);
+    } catch (e) { data = null; }
+
+    if (data && data.success) {
+      LAST_SYNC = new Date();
+      updateSyncIndicator('ok');
+      console.log('Auto-sync OK: ' + data.count + ' rader');
+    } else {
+      // Fallback til JSONP
+      syncToGScriptJSONP(url, jsonData);
+    }
+    IS_SYNCING = false;
+  })
+  .catch(function() {
+    syncToGScriptJSONP(url, jsonData);
+  });
+}
+
+function syncToGScriptJSONP(url, jsonData) {
   var script = document.createElement("script");
   var callbackName = "gscriptSyncCallback_" + Date.now();
   window[callbackName] = function(data) {
@@ -1617,9 +1659,56 @@ function sendToGScript() {
   $("synkStatus").innerHTML = `<div style="color:#3498db;">⏳ Sender data...</div>`;
 
   const jsonData = JSON.stringify(DB.items);
+
+  // Prøv POST først (krever oppdatert GScript med doPost)
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'action=write&data=' + encodeURIComponent(jsonData)
+  })
+  .then(function(response) { return response.text(); })
+  .then(function(text) {
+    // JSONP-respons kan være omsluttet i callback, prøv å parse
+    var data;
+    try {
+      // Hvis respons er JSONP-format: callback({...});
+      var match = text.match(/^\w+\((.*)\);?$/s);
+      if (match) {
+        data = JSON.parse(match[1]);
+      } else {
+        data = JSON.parse(text);
+      }
+    } catch (e) {
+      // Hvis ikke JSON, sjekk om det er suksess på annen måte
+      $("synkStatus").innerHTML = `<div style="color:#f39c12;">⚠️ Uventet respons, prøver JSONP...</div>`;
+      sendToGScriptJSONP(url, jsonData);
+      return;
+    }
+
+    if (data && data.success) {
+      $("synkStatus").innerHTML = `<div style="color:#0f9b6e;">✅ Sendt ${data.count} rader!</div>`;
+      showToast("Data sendt!");
+    } else {
+      var errMsg = data && data.error ? data.error : "Ukjent feil";
+      $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Feil: ${errMsg}</div>`;
+      showToast("Send feilet: " + errMsg, "error");
+      // Prøv JSONP som fallback
+      sendToGScriptJSONP(url, jsonData);
+    }
+  })
+  .catch(function(err) {
+    console.log("POST feilet:", err);
+    // Fallback til JSONP
+    sendToGScriptJSONP(url, jsonData);
+  });
+}
+
+function sendToGScriptJSONP(url, jsonData) {
+  $("synkStatus").innerHTML = `<div style="color:#3498db;">⏳ Prøver JSONP...</div>`;
+
   if (jsonData.length > 7000) {
-    $("synkStatus").innerHTML = `<div style="color:#f39c12;">⚠️ For mye data for GET</div>`;
-    showToast("For mye data for direkte synk", "error");
+    $("synkStatus").innerHTML = `<div style="color:#f39c12;">⚠️ For mye data (${jsonData.length} tegn). Maks 7000 for JSONP.<br>Bruk "CSV" eller "Excel" eksport i stedet.</div>`;
+    showToast("For mye data for direkte synk. Bruk eksport.", "error");
     return;
   }
 
@@ -1632,15 +1721,16 @@ function sendToGScript() {
       $("synkStatus").innerHTML = `<div style="color:#0f9b6e;">✅ Sendt ${data.count} rader!</div>`;
       showToast("Data sendt!");
     } else {
-      $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Send feilet</div>`;
-      showToast("Send feilet", "error");
+      var errMsg = data && data.error ? data.error : "Ukjent feil";
+      $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Feil: ${errMsg}</div>`;
+      showToast("Send feilet: " + errMsg, "error");
     }
   };
   script.onerror = function() {
     delete window[callbackName];
     if (script.parentNode) script.parentNode.removeChild(script);
-    $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Send feilet</div>`;
-    showToast("Send feilet", "error");
+    $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Kunne ikke koble til Google Apps Script.<br>Sjekk at URL er riktig og at scriptet er deployet.</div>`;
+    showToast("Send feilet - sjekk URL og deploy", "error");
   };
   script.src = url + "?action=write&data=" + encodeURIComponent(jsonData) + "&callback=" + callbackName;
   document.head.appendChild(script);
@@ -1648,7 +1738,7 @@ function sendToGScript() {
     if (window[callbackName]) {
       delete window[callbackName];
       if (script.parentNode) script.parentNode.removeChild(script);
-      $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Tidsavbrudd</div>`;
+      $("synkStatus").innerHTML = `<div style="color:#e94560;">❌ Tidsavbrudd - ingen respons fra server</div>`;
     }
   }, 15000);
 }
@@ -1985,6 +2075,9 @@ function saveInnWithQR(qrId) {
   if (DB.items.some(i => i.qrId === qrId && !i.utDato)) {
     showToast("Advarsel: QR-kode finnes allerede!", "error");
   }
+
+  // Lagre QR-ID i global variabel som backup
+  pendingQRId = qrId;
 
   // Sett QR-ID i feltet og vis gul tekst
   const qrInput = $("innQrId");
