@@ -176,7 +176,7 @@ function loadHtml5Qrcode(callback) {
   document.head.appendChild(script);
 }
 
-const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.2.0" };
+const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.2.1" };
 
 let LAGRE = ["Kjøpslager", "Sortert", "Produsert", "Slettet"];
 let LEVERANDORER = ["Kjøllefjord", "Båtsfjord", "Berlevåg", "Nesseby"];
@@ -543,9 +543,9 @@ function showLagerOversikt() {
   const items = DB.items.filter(i => i.lager === lager);
 
   let html = `<div class="section" style="margin-top:15px;"><div class="section-title">${lager} (${items.length} varer)</div>` +
-    `<table class="data-table"><thead><tr><th>KAR-ID</th>h><th>Størrelse</th><th>Netto</th><th>Dato</th><th>Velg</th></tr></thead><tbody>`;
+    `<table class="data-table"><thead><tr><th>KAR-ID</th><th>Leverandør</th><th>Størrelse</th><th>Netto</th><th>Dato</th><th>Velg</th></tr></thead><tbody>`;
   items.forEach(item => {
-    html += `<tr><td>${item.karId || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${formatDateNo(item.dato)}</td>` +
+    html += `<tr><td>${item.karId || "N/A"}</td><td>${item.lev}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${formatDateNo(item.dato)}</td>` +
       `<td><input type="checkbox" class="bulk-ut" data-id="${item.id}"></td></tr>`;
   });
   html += `</tbody></table><div class="btn-row" style="margin-top:10px;"><button class="btn btn-success" onclick="bulkUt()">Flytt valgte til Produsert</button></div></div>`;
@@ -844,7 +844,7 @@ function filterKorr() {
   let html = `<div class="section"><div class="section-title">Resultater (${items.length}) <span style="margin-left:auto;color:#00d4ff;">${formatNumber(totalNetto)} kg totalt</span></div>` +
     `<table class="data-table"><thead><tr><th>Dato</th><th>Lager</th><th>KAR-ID</th><th>Størrelse</th><th>Netto</th><th>Handling</th></tr></thead><tbody>`;
   items.forEach(item => {
-    html += `<tr><td>${formatDateNo(item.dato)}</td><td>${item.lager}</td><td>${item.karId || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td>` +
+    html += `<tr><td>${formatDateNo(item.dato)}</td><td>${item.lager}</td><td>${item.karId || "N/A"}</td><td>${item.lev}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td>` +
       `<td class="actions"><button class="edit-btn" onclick="editItem('${item.id}')">✏️</button><button class="del-btn" onclick="deleteItem('${item.id}')">🗑️</button></td></tr>`;
   });
   html += `</tbody></table></div>`;
@@ -956,7 +956,7 @@ function showRapTotal() {
     `<table class="data-table"><thead><tr><th>KAR-ID</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th><th>Dato</th><th>Døgn</th><th>Lager</th></tr></thead><tbody>`;
   items.forEach(function(item) {
     var dogn = daysBetween(item.dato, new Date());
-    html += `<tr><td>${item.karId || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td><td>${formatDateNo(item.dato)}</td><td>${dogn}</td><td>${item.lager}</td></tr>`;
+    html += `<tr><td>${item.karId || "N/A"}</td><td>${item.lev}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td><td>${formatDateNo(item.dato)}</td><td>${dogn}</td><td>${item.lager}</td></tr>`;
   });
   html += `</tbody></table></div>`;
   $("rapContent").innerHTML = html;
@@ -1013,7 +1013,7 @@ function generateRapLev() {
       `<table class="data-table"><thead><tr><th>KAR-ID</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th><th>Dato</th><th>Døgn</th><th>Lager</th></tr></thead><tbody>`;
     l.data.items.forEach(function(item) {
       var dogn = daysBetween(item.dato, new Date());
-      html += `<tr><td>${item.karId || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td><td>${formatDateNo(item.dato)}</td><td>${dogn}</td><td>${item.lager}</td></tr>`;
+      html += `<tr><td>${item.karId || "N/A"}</td><td>${item.lev}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td><td>${formatDateNo(item.dato)}</td><td>${dogn}</td><td>${item.lager}</td></tr>`;
     });
     html += `</tbody></table></div>`;
   });
@@ -1256,7 +1256,7 @@ function generateRapProd() {
       `<span style="color:#00d4ff;font-weight:700;">${formatNumber(l.data.sum)} kg</span></div>` +
       `<table class="data-table"><thead><tr><th>Dato</th><th>KAR-ID</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th></tr></thead><tbody>`;
     l.data.items.forEach(function(item) {
-      html += `<tr><td>${formatDateNo(item.dato)}</td><td>${item.karId || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td></tr>`;
+      html += `<tr><td>${formatDateNo(item.dato)}</td><td>${item.karId || "N/A"}</td><td>${item.lev}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td></tr>`;
     });
     html += `</tbody></table></div>`;
   });
