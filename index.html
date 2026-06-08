@@ -1986,15 +1986,51 @@ function generateInlineQR(text, containerId) {
 function startQRScan() {
   const overlay = document.createElement("div"); overlay.className = "qr-overlay"; overlay.id = "qrOverlay";
   overlay.innerHTML = `<button class="close-btn" onclick="stopQRScan()">Lukk</button>` +
-    `<video id="qrVideo" autoplay playsinline></video>` +
-    `<div class="qr-manual"><p>QR-kode leses automatisk...</p>` +
+    `<div style="width:100%;max-width:400px;margin:0 auto;text-align:center;">` +
+    `<video id="qrVideo" autoplay playsinline muted style="width:100%;max-width:400px;height:300px;border-radius:12px;background:#000;object-fit:cover;"></video>` +
+    `<canvas id="qrCanvas" style="display:none;"></canvas>` +
+    `<p id="qrStatus" style="color:#00d4ff;margin-top:10px;font-size:0.9rem;">Venter på kamera...</p>` +
+    `</div>` +
+    `<div class="qr-manual"><p>Scan QR-kode på pallen...</p>` +
     `<div class="form-group"><label>Eller tast inn manuelt:</label><input type="text" id="qrManualInput" placeholder="QR ID eller Kar nr"></div>` +
     `<button class="btn btn-primary" onclick="manualQRInput()">Søk</button></div>`;
   document.body.appendChild(overlay);
 
+  // Åpne kamera med getUserMedia
   navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-    .then(stream => { const video = $("qrVideo"); video.srcObject = stream; qrScanner = stream; })
-    .catch(() => { showToast("Kamera ikke tilgjengelig. Bruk manuell inntasting.", "info"); });
+    .then(function(stream) {
+      const video = document.getElementById("qrVideo");
+      const canvas = document.getElementById("qrCanvas");
+      const ctx = canvas.getContext("2d");
+      video.srcObject = stream;
+      qrScanner = stream;
+      document.getElementById("qrStatus").textContent = "Kamera aktiv - hold QR-kode foran...";
+
+      // Start QR-scanning loop med jsQR
+      var scanInterval = setInterval(function() {
+        if (!qrScanner || !document.getElementById("qrVideo")) {
+          clearInterval(scanInterval);
+          return;
+        }
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          var code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
+          if (code && code.data) {
+            clearInterval(scanInterval);
+            stopQRScan();
+            processUt(code.data);
+          }
+        }
+      }, 500); // Scan hvert 500ms
+    })
+    .catch(function(err) {
+      console.log("Kamera feil:", err);
+      document.getElementById("qrStatus").textContent = "Kamera ikke tilgjengelig. Bruk manuell inntasting.";
+      showToast("Kamera ikke tilgjengelig. Bruk manuell inntasting.", "info");
+    });
 }
 
 // QR-scanning for INN (lagre vare med skannet QR-kode)
