@@ -174,7 +174,7 @@ function loadHtml5Qrcode(callback) {
   document.head.appendChild(script);
 }
 
-const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.1.3" };
+const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.1.4" };
 
 let LAGRE = ["Kjøpslager", "Sortert", "Produsert", "Slettet"];
 let LEVERANDORER = ["Kjøllefjord", "Båtsfjord", "Berlevåg", "Nesseby"];
@@ -1597,10 +1597,10 @@ function syncToGScript() {
     return;
   }
 
-  // Prøv POST først med ren JSON
+  // Prøv POST først med text/plain (unngår CORS preflight)
   fetch(url + "?action=write", {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: jsonData
   })
   .then(function(response) { return response.text(); })
@@ -1668,10 +1668,10 @@ function sendToGScript() {
 
   const jsonData = JSON.stringify(DB.items);
 
-  // Prøv POST først med ren JSON
+  // Prøv POST først med text/plain (unngår CORS preflight)
   fetch(url + "?action=write", {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: jsonData
   })
   .then(function(response) { return response.text(); })
