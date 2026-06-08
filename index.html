@@ -157,6 +157,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 <base target="_blank">
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <base target="_blank">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -174,7 +176,7 @@ function loadHtml5Qrcode(callback) {
   document.head.appendChild(script);
 }
 
-const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.1.4" };
+const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.2.0" };
 
 let LAGRE = ["Kjøpslager", "Sortert", "Produsert", "Slettet"];
 let LEVERANDORER = ["Kjøllefjord", "Båtsfjord", "Berlevåg", "Nesseby"];
@@ -342,7 +344,7 @@ function renderInn(content) {
     `<div class="form-group"><label>Leverandør</label><select id="innLev"><option value="">Velg leverandør...</option>${LEVERANDORER.map(l => `<option value="${l}">${l}</option>`).join("")}</select></div>` +
     `<div class="form-group"><label>Størrelse</label><select id="innStorrelse"><option value="">Velg størrelse...</option></select></div>` +
     `<div class="form-row">` +
-    `<div class="form-group" style="flex:1;"><label>Kar nr</label><input type="text" id="innKar" placeholder="F.eks K123" oninput="validateKarNr(this)"></div>` +
+    `<div class="form-group" style="flex:1;"><label>KAR-ID</label><input type="text" id="innKarId" placeholder="F.eks K123" oninput="validateKarNr(this)"></div>` +
     `<div class="form-group" style="flex:1;"><label id="qrLabel" style="color:#888;">QR ID</label>` +
     `<input type="text" id="innQrId" placeholder="" readonly style="background:#0f3460;color:#00d4ff;font-weight:600;"></div></div>` +
     `<div class="form-row"><div class="form-group"><label>Brutto kilo</label><input type="text" id="innBrutto" placeholder="0,0" oninput="calcNetto()"></div>` +
@@ -374,7 +376,7 @@ function saveInn(withQR) {
   const lager = $("innLager").value;
   const lev = $("innLev").value;
   const storrelse = $("innStorrelse").value;
-  const kar = $("innKar").value.trim();
+  const kar = $("innKarId").value.trim();
   // Les QR-ID fra feltet, med fallback til pendingQRId
   let qrId = "";
   if ($("innQrId")) {
@@ -389,7 +391,7 @@ function saveInn(withQR) {
   const netto = parseNumber($("innNetto").value);
 
   if (!lager || !lev || !storrelse) { showToast("Fyll ut alle obligatoriske felter", "error"); return; }
-  if (kar && DB.items.some(i => i.kar === kar && !i.utDato)) { showToast("Advarsel: Kar nr finnes allerede!", "error"); }
+  if (kar && DB.items.some(i => i.karId === kar && !i.utDato)) { showToast("Advarsel: KAR-ID finnes allerede!", "error"); }
 
   if (withQR) {
     // Åpne QR-scanner for å lese QR-kode fra pallen
@@ -398,13 +400,13 @@ function saveInn(withQR) {
   }
 
   const item = {
-    id: generateId(), qrId: qrId, kar: kar,
+    id: generateId(), karId: kar || qrId,
     dato: dato + "T" + tid, lager: lager, lev: lev, storrelse: storrelse,
     brutto: brutto, tara: tara, netto: netto, utDato: null, userInn: currentUser.name
   };
 
   DB.items.push(item); saveDB(); showToast("Vare lagret!");
-  $("innKar").value = ""; $("innQrId").value = ""; $("innBrutto").value = ""; $("innTara").value = ""; $("innNetto").value = "";
+  $("innKarId").value = ""; $("innQrId").value = ""; $("innBrutto").value = ""; $("innTara").value = ""; $("innNetto").value = "";
   $("qrLabel").textContent = "QR ID"; $("qrLabel").style.color = "#888";
   pendingQRId = ""; // Tøm pending QR-ID
   const now = new Date();
@@ -426,8 +428,8 @@ function renderUt(content) {
 function getUniqueLetters() {
   const letters = new Set();
   DB.items.forEach(i => {
-    if (i.lager !== "Produsert" && i.kar && typeof i.kar === "string") {
-      const match = i.kar.match(/^[A-Za-z]+/);
+    if (i.lager !== "Produsert" && i.karId && typeof i.karId === "string") {
+      const match = i.karId.match(/^[A-Za-z]+/);
       if (match) letters.add(match[0].toUpperCase());
     }
   });
@@ -510,15 +512,14 @@ function kalkSearch() {
 
 function processUt(search) {
   const item = DB.items.find(i => {
-    const karStr = i.kar ? String(i.kar) : "";
-    const qrStr = i.qrId ? String(i.qrId) : "";
-    return karStr.toLowerCase() === search.toLowerCase() || qrStr.toLowerCase() === search.toLowerCase();
+    const karIdStr = i.karId ? String(i.karId) : "";
+    return karIdStr.toLowerCase() === search.toLowerCase();
   });
   if (!item) { showToast("Vare ikke funnet", "error"); return; }
   if (item.lager === "Produsert") { showToast("Vare er allerede produsert", "error"); return; }
 
   $("utResult").innerHTML = `<div class="section" style="margin-top:15px;"><div class="section-title">Vare funnet</div>` +
-    `<p><strong>Kar:</strong> ${item.kar || "N/A"}</p><p><strong>QR:</strong> ${item.qrId || "N/A"}</p>` +
+    `<p><strong>KAR-ID:</strong> ${item.karId || "N/A"}</p>` +
     `<p><strong>Lager:</strong> ${item.lager}</p><p><strong>Størrelse:</strong> ${item.storrelse}</p>` +
     `<p><strong>Netto:</strong> ${formatNumber(item.netto)} kg</p><p><strong>Inn dato:</strong> ${formatDateNo(item.dato)}</p>` +
     `<div class="info-box warning" style="margin-top:10px;">Varen vil flyttes til <strong>Produsert</strong></div>` +
@@ -542,9 +543,9 @@ function showLagerOversikt() {
   const items = DB.items.filter(i => i.lager === lager);
 
   let html = `<div class="section" style="margin-top:15px;"><div class="section-title">${lager} (${items.length} varer)</div>` +
-    `<table class="data-table"><thead><tr><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Dato</th><th>Velg</th></tr></thead><tbody>`;
+    `<table class="data-table"><thead><tr><th>KAR-ID</th>h><th>Størrelse</th><th>Netto</th><th>Dato</th><th>Velg</th></tr></thead><tbody>`;
   items.forEach(item => {
-    html += `<tr><td>${item.kar || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${formatDateNo(item.dato)}</td>` +
+    html += `<tr><td>${item.karId || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${formatDateNo(item.dato)}</td>` +
       `<td><input type="checkbox" class="bulk-ut" data-id="${item.id}"></td></tr>`;
   });
   html += `</tbody></table><div class="btn-row" style="margin-top:10px;"><button class="btn btn-success" onclick="bulkUt()">Flytt valgte til Produsert</button></div></div>`;
@@ -591,7 +592,7 @@ function renderKontroll(content) {
     `<div class="section"><div class="table-scroll-wrapper"><div class="table-wrap">` +
     `<table class="kontroll-table"><thead><tr>` +
     `<th><input type="checkbox" id="kSelectAll" onclick="kontrollToggleAll()"></th>` +
-    `<th>ID</th><th>QR ID</th><th>Kar nr</th><th>Dato</th><th>Lager</th><th>Leverandør</th><th>Størrelse</th>` +
+    `<th>ID</th><th>KAR-ID</th><th>Dato</th><th>Lager</th><th>Leverandør</th><th>Størrelse</th>` +
     `<th>Brutto</th><th>Tara</th><th>Netto</th><th>Ut dato</th><th>Registrert av</th><th>Handling</th></tr></thead>` +
     `<tbody id="kTable"></tbody></table></div></div>` +
     `<div id="kEmpty" class="empty" style="display:none">Ingen varer</div></div></div>`;
@@ -675,8 +676,7 @@ function kontrollRender(items) {
     return `<tr>` +
       `<td><input type="checkbox" class="k-select" data-id="${i.id}"></td>` +
       `<td>${i.id}</td>` +
-      `<td>${i.qrId || ""}</td>` +
-      `<td>${i.kar || ""}</td>` +
+      `<td>${i.karId || ""}</td>` +
       `<td>${formatDateNo(i.dato)}</td>` +
       `<td>${i.lager}</td>` +
       `<td>${i.lev}</td>` +
@@ -749,7 +749,7 @@ function kontrollEdit(id) {
   var item = DB.items.find(function(i) { return i.id === id; });
   if (!item) return;
   showModal("Rediger vare", 
-    `<div class="form-group"><label>Kar nr</label><input type="text" id="kEditKar" value="${item.kar || ""}"></div>` +
+    `<div class="form-group"><label>KAR-ID</label><input type="text" id="kEditKarId" value="${item.karId || ""}"></div>` +
     `<div class="form-group"><label>Lager</label><select id="kEditLager">${LAGRE.map(function(l) { return `<option ${l === item.lager ? 'selected' : ''}>${l}</option>`; }).join("")}</select></div>` +
     `<div class="form-group"><label>Leverandør</label><select id="kEditLev">${LEVERANDORER.map(function(l) { return `<option ${l === item.lev ? 'selected' : ''}>${l}</option>`; }).join("")}</select></div>` +
     `<div class="form-group"><label>Størrelse</label><input type="text" id="kEditStorrelse" value="${item.storrelse}"></div>` +
@@ -763,7 +763,7 @@ function kontrollEdit(id) {
 function kontrollSaveEdit(id) {
   var item = DB.items.find(function(i) { return i.id === id; });
   if (!item) return;
-  item.kar = $("kEditKar").value;
+  item.karId = $("kEditKarId").value;
   item.lager = $("kEditLager").value;
   item.lev = $("kEditLev").value;
   item.storrelse = $("kEditStorrelse").value;
@@ -783,7 +783,7 @@ function kontrollMove(id) {
   }).join("");
 
   showModal("Velg lager du vil flytte pallen til:", 
-    `<div class="form-group"><p><strong>Kar:</strong> ${item.kar || "N/A"}</p><p><strong>Nåværende lager:</strong> ${item.lager}</p></div>` +
+    `<div class="form-group"><p><strong>KAR-ID:</strong> ${item.karId || "N/A"}</p><p><strong>Nåværende lager:</strong> ${item.lager}</p></div>` +
     `<div style="display:flex;flex-direction:column;gap:5px;">${lagerButtons}</div>` +
     `<div class="btn-row" style="margin-top:15px;"><button class="btn btn-secondary" onclick="closeModal()">Avbryt</button></div>`);
 }
@@ -842,9 +842,9 @@ function filterKorr() {
   let totalNetto = items.reduce((sum, i) => sum + i.netto, 0);
 
   let html = `<div class="section"><div class="section-title">Resultater (${items.length}) <span style="margin-left:auto;color:#00d4ff;">${formatNumber(totalNetto)} kg totalt</span></div>` +
-    `<table class="data-table"><thead><tr><th>Dato</th><th>Lager</th><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Handling</th></tr></thead><tbody>`;
+    `<table class="data-table"><thead><tr><th>Dato</th><th>Lager</th><th>KAR-ID</th><th>Størrelse</th><th>Netto</th><th>Handling</th></tr></thead><tbody>`;
   items.forEach(item => {
-    html += `<tr><td>${formatDateNo(item.dato)}</td><td>${item.lager}</td><td>${item.kar || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td>` +
+    html += `<tr><td>${formatDateNo(item.dato)}</td><td>${item.lager}</td><td>${item.karId || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td>` +
       `<td class="actions"><button class="edit-btn" onclick="editItem('${item.id}')">✏️</button><button class="del-btn" onclick="deleteItem('${item.id}')">🗑️</button></td></tr>`;
   });
   html += `</tbody></table></div>`;
@@ -867,7 +867,7 @@ function editItem(id) {
     `<div class="form-group"><label>Lager</label><select id="editLager">${LAGRE.map(l => `<option value="${l}" ${l===item.lager?'selected':''}>${l}</option>`).join("")}</select></div>` +
     `<div class="form-group"><label>Leverandør</label><select id="editLev">${LEVERANDORER.map(l => `<option value="${l}" ${l===item.lev?'selected':''}>${l}</option>`).join("")}</select></div>` +
     `<div class="form-group"><label>Størrelse</label><input type="text" id="editStorrelse" value="${item.storrelse}"></div>` +
-    `<div class="form-group"><label>Kar nr</label><input type="text" id="editKar" value="${item.kar || ''}"></div>` +
+    `<div class="form-group"><label>KAR-ID</label><input type="text" id="editKarId" value="${item.karId || ''}"></div>` +
     `<div class="form-row"><div class="form-group"><label>Brutto</label><input type="text" id="editBrutto" value="${formatNumber(item.brutto)}"></div>` +
     `<div class="form-group"><label>Tara</label><input type="text" id="editTara" value="${formatNumber(item.tara)}"></div></div>` +
     `<div class="form-group"><label>Netto</label><input type="text" id="editNetto" value="${formatNumber(item.netto)}" readonly></div>` +
@@ -880,7 +880,7 @@ function saveEdit() {
   editingItem.lager = $("editLager").value;
   editingItem.lev = $("editLev").value;
   editingItem.storrelse = $("editStorrelse").value;
-  editingItem.kar = $("editKar").value.trim();
+  editingItem.karId = $("editKarId").value.trim();
   editingItem.brutto = parseNumber($("editBrutto").value);
   editingItem.tara = parseNumber($("editTara").value);
   editingItem.netto = parseNumber($("editNetto").value);
@@ -931,13 +931,13 @@ function showRapTotal() {
     levSum[item.lev] = (levSum[item.lev] || 0) + item.netto;
   });
 
-  var uniqueKar = {};
+  var uniqueKarId = {};
   var unikeCount = 0;
   items.forEach(function(i) {
-    var karStr = i.kar ? String(i.kar) : "";
-    if (karStr.trim() !== "") {
-      var k = karStr.trim();
-      if (!uniqueKar[k]) { uniqueKar[k] = true; unikeCount++; }
+    var karIdStr = i.karId ? String(i.karId) : "";
+    if (karIdStr.trim() !== "") {
+      var k = karIdStr.trim();
+      if (!uniqueKarId[k]) { uniqueKarId[k] = true; unikeCount++; }
     }
   });
 
@@ -953,10 +953,10 @@ function showRapTotal() {
 
   html += `<div class="section" style="margin-top:15px;"><div class="section-title">Palleliste (${items.length} registreringer, ${unikeCount} unike)</div>` +
     `<div class="btn-row no-print" style="margin-bottom:10px;"><button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button><button class="btn btn-secondary" onclick="exportPDF()">📄 PDF</button></div>` +
-    `<table class="data-table"><thead><tr><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th><th>Dato</th><th>Døgn</th><th>Lager</th></tr></thead><tbody>`;
+    `<table class="data-table"><thead><tr><th>KAR-ID</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th><th>Dato</th><th>Døgn</th><th>Lager</th></tr></thead><tbody>`;
   items.forEach(function(item) {
     var dogn = daysBetween(item.dato, new Date());
-    html += `<tr><td>${item.kar || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td><td>${formatDateNo(item.dato)}</td><td>${dogn}</td><td>${item.lager}</td></tr>`;
+    html += `<tr><td>${item.karId || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td><td>${formatDateNo(item.dato)}</td><td>${dogn}</td><td>${item.lager}</td></tr>`;
   });
   html += `</tbody></table></div>`;
   $("rapContent").innerHTML = html;
@@ -1010,10 +1010,10 @@ function generateRapLev() {
     html += `<div class="section" style="margin-top:15px;"><div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0f3460;padding-bottom:5px;margin-bottom:8px;">` +
       `<span style="font-weight:700;font-size:1rem;">${l.lev}</span>` +
       `<span style="color:#00d4ff;font-weight:700;">${formatNumber(l.data.sum)} kg</span></div>` +
-      `<table class="data-table"><thead><tr><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th><th>Dato</th><th>Døgn</th><th>Lager</th></tr></thead><tbody>`;
+      `<table class="data-table"><thead><tr><th>KAR-ID</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th><th>Dato</th><th>Døgn</th><th>Lager</th></tr></thead><tbody>`;
     l.data.items.forEach(function(item) {
       var dogn = daysBetween(item.dato, new Date());
-      html += `<tr><td>${item.kar || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td><td>${formatDateNo(item.dato)}</td><td>${dogn}</td><td>${item.lager}</td></tr>`;
+      html += `<tr><td>${item.karId || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td><td>${formatDateNo(item.dato)}</td><td>${dogn}</td><td>${item.lager}</td></tr>`;
     });
     html += `</tbody></table></div>`;
   });
@@ -1190,7 +1190,7 @@ function generateRapLevpak() {
       '<span style="font-weight:700;font-size:1rem;">' + l.lev + '</span>' +
       '<span style="color:#00d4ff;font-weight:700;">' + l.data.boxSum + ' box</span>' +
       '<span style="color:#00d4ff;font-weight:700;">' + formatNumber(l.data.sum) + ' kg</span></div>' +
-      '<table class="data-table"><thead><tr><th>Kar</th><th>Størrelse</th><th>Fordeling %</th><th>Netto</th><th>Ant. Box</th><th>Leverandør</th><th>Snitt Døgn</th><th>Lager</th></tr></thead><tbody>';
+      '<table class="data-table"><thead><tr><th>KAR-ID</th><th>Størrelse</th><th>Fordeling %</th><th>Netto</th><th>Ant. Box</th><th>Leverandør</th><th>Snitt Døgn</th><th>Lager</th></tr></thead><tbody>';
 
     for (var size in l.data.sizes) {
       var sizeData = l.data.sizes[size];
@@ -1254,9 +1254,9 @@ function generateRapProd() {
     html += `<div class="section" style="margin-top:15px;"><div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0f3460;padding-bottom:5px;margin-bottom:8px;">` +
       `<span style="font-weight:700;font-size:1rem;">${l.lev}</span>` +
       `<span style="color:#00d4ff;font-weight:700;">${formatNumber(l.data.sum)} kg</span></div>` +
-      `<table class="data-table"><thead><tr><th>Dato</th><th>Kar</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th></tr></thead><tbody>`;
+      `<table class="data-table"><thead><tr><th>Dato</th><th>KAR-ID</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th></tr></thead><tbody>`;
     l.data.items.forEach(function(item) {
-      html += `<tr><td>${formatDateNo(item.dato)}</td><td>${item.kar || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td></tr>`;
+      html += `<tr><td>${formatDateNo(item.dato)}</td><td>${item.karId || "N/A"}</td><td>${item.storrelse}</td><td>${formatNumber(item.netto)}</td><td>${item.lev}</td></tr>`;
     });
     html += `</tbody></table></div>`;
   });
@@ -1523,7 +1523,7 @@ function renderSynk(content) {
 }
 
 function getGScriptCode() {
-  return `function doGet(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var action = e.parameter.action;\n  var callback = e.parameter.callback;\n  var result;\n  \n  try {\n    if (action === "read") {\n      var data = sheet.getDataRange().getValues();\n      result = {success: true, data: data};\n    }\n    else if (action === "write") {\n      var jsonData = e.parameter.data;\n      if (!jsonData) {\n        result = {success: false, error: "Ingen data mottatt"};\n      } else {\n        try {\n          var items = JSON.parse(jsonData);\n          if (!Array.isArray(items)) {\n            result = {success: false, error: "Data er ikke en array"};\n          } else {\n            sheet.clear();\n            var headers = ["ID", "QR ID", "Kar nr", "Dato", "Lager", "Leverand\u00f8r", "St\u00f8rrelse", "Brutto", "Tara", "Netto", "Ut dato", "Registrert av"];\n            sheet.appendRow(headers);\n            items.forEach(function(row) {\n              sheet.appendRow([row.id, row.qrId || "", row.kar || "", row.dato, row.lager, row.lev, row.storrelse, row.brutto, row.tara, row.netto, row.utDato || "", row.userInn || ""]);\n            });\n            result = {success: true, count: items.length};\n          }\n        } catch (parseErr) {\n          result = {success: false, error: "JSON parse feil: " + parseErr.message};\n        }\n      }\n    }\n    else {\n      var data = sheet.getDataRange().getValues();\n      result = {success: true, data: data};\n    }\n  } catch (err) {\n    result = {success: false, error: err.message};\n  }\n  \n  var output = ContentService.createTextOutput(callback + "(" + JSON.stringify(result) + ");");\n  output.setMimeType(ContentService.MimeType.JAVASCRIPT);\n  return output;\n}\n\nfunction doPost(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var action = e.parameter.action;\n  var result;\n  \n  try {\n    if (action === "write") {\n      var jsonData = e.postData ? e.postData.contents : "";\n      if (!jsonData) {\n        result = {success: false, error: "Ingen data mottatt i POST"};\n      } else {\n        try {\n          var items = JSON.parse(jsonData);\n          sheet.clear();\n          var headers = ["ID", "QR ID", "Kar nr", "Dato", "Lager", "Leverand\u00f8r", "St\u00f8rrelse", "Brutto", "Tara", "Netto", "Ut dato", "Registrert av"];\n          sheet.appendRow(headers);\n          items.forEach(function(row) {\n            sheet.appendRow([row.id, row.qrId || "", row.kar || "", row.dato, row.lager, row.lev, row.storrelse, row.brutto, row.tara, row.netto, row.utDato || "", row.userInn || ""]);\n            });\n          result = {success: true, count: items.length};\n        } catch (parseErr) {\n          result = {success: false, error: "JSON parse feil: " + parseErr.message + " | Data: " + jsonData.substring(0, 100)};\n        }\n      }\n    } else {\n      result = {success: false, error: "Ukjent action: " + action};\n    }\n  } catch (err) {\n    result = {success: false, error: err.message};\n  }\n  \n  return ContentService.createTextOutput(JSON.stringify(result))\n    .setMimeType(ContentService.MimeType.JSON);\n}\n\nfunction doOptions(e) {\n  return ContentService.createTextOutput("")\n    .setHeaders({\n      'Access-Control-Allow-Origin': '*',\n      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',\n      'Access-Control-Allow-Headers': 'Content-Type'\n    });\n}`;
+  return `function doGet(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var action = e.parameter.action;\n  var callback = e.parameter.callback;\n  var result;\n  \n  try {\n    if (action === "read") {\n      var data = sheet.getDataRange().getValues();\n      result = {success: true, data: data};\n    }\n    else if (action === "write") {\n      var jsonData = e.parameter.data;\n      if (!jsonData) {\n        result = {success: false, error: "Ingen data mottatt"};\n      } else {\n        try {\n          var items = JSON.parse(jsonData);\n          if (!Array.isArray(items)) {\n            result = {success: false, error: "Data er ikke en array"};\n          } else {\n            sheet.clear();\n            var headers = ["ID", "QR ID", "Kar nr", "Dato", "Lager", "Leverand\u00f8r", "St\u00f8rrelse", "Brutto", "Tara", "Netto", "Ut dato", "Registrert av"];\n            sheet.appendRow(headers);\n            items.forEach(function(row) {\n              sheet.appendRow([row.id, row.karId || "", row.dato, row.lager, row.lev, row.storrelse, row.brutto, row.tara, row.netto, row.utDato || "", row.userInn || ""]);\n            });\n            result = {success: true, count: items.length};\n          }\n        } catch (parseErr) {\n          result = {success: false, error: "JSON parse feil: " + parseErr.message};\n        }\n      }\n    }\n    else {\n      var data = sheet.getDataRange().getValues();\n      result = {success: true, data: data};\n    }\n  } catch (err) {\n    result = {success: false, error: err.message};\n  }\n  \n  var output = ContentService.createTextOutput(callback + "(" + JSON.stringify(result) + ");");\n  output.setMimeType(ContentService.MimeType.JAVASCRIPT);\n  return output;\n}\n\nfunction doPost(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var action = e.parameter.action;\n  var result;\n  \n  try {\n    if (action === "write") {\n      var jsonData = e.postData ? e.postData.contents : "";\n      if (!jsonData) {\n        result = {success: false, error: "Ingen data mottatt i POST"};\n      } else {\n        try {\n          var items = JSON.parse(jsonData);\n          sheet.clear();\n          var headers = ["ID", "QR ID", "Kar nr", "Dato", "Lager", "Leverand\u00f8r", "St\u00f8rrelse", "Brutto", "Tara", "Netto", "Ut dato", "Registrert av"];\n          sheet.appendRow(headers);\n          items.forEach(function(row) {\n            sheet.appendRow([row.id, row.karId || "", row.dato, row.lager, row.lev, row.storrelse, row.brutto, row.tara, row.netto, row.utDato || "", row.userInn || ""]);\n            });\n          result = {success: true, count: items.length};\n        } catch (parseErr) {\n          result = {success: false, error: "JSON parse feil: " + parseErr.message + " | Data: " + jsonData.substring(0, 100)};\n        }\n      }\n    } else {\n      result = {success: false, error: "Ukjent action: " + action};\n    }\n  } catch (err) {\n    result = {success: false, error: err.message};\n  }\n  \n  return ContentService.createTextOutput(JSON.stringify(result))\n    .setMimeType(ContentService.MimeType.JSON);\n}\n\nfunction doOptions(e) {\n  return ContentService.createTextOutput("")\n    .setHeaders({\n      'Access-Control-Allow-Origin': '*',\n      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',\n      'Access-Control-Allow-Headers': 'Content-Type'\n    });\n}`;
 }
 
 function copyGScriptCode() {
@@ -1762,10 +1762,10 @@ function fetchFromGScript(silent) {
         var r = rows[i];
         if (!r[0]) continue;
         var newItem = {
-          id: r[0], qrId: r[1] || "", kar: r[2] || "", dato: r[3] || new Date().toISOString(),
-          lager: r[4] || "Kjøpslager", lev: r[5] || "", storrelse: r[6] || "",
-          brutto: parseFloat(r[7]) || 0, tara: parseFloat(r[8]) || 0, netto: parseFloat(r[9]) || 0,
-          utDato: r[10] || null, userInn: r[11] || (currentUser ? currentUser.name : "")
+          id: r[0], karId: r[1] || "", dato: r[2] || new Date().toISOString(),
+          lager: r[3] || "Kjøpslager", lev: r[4] || "", storrelse: r[5] || "",
+          brutto: parseFloat(r[6]) || 0, tara: parseFloat(r[7]) || 0, netto: parseFloat(r[8]) || 0,
+          utDato: r[9] || null, userInn: r[10] || (currentUser ? currentUser.name : "")
         };
         // Hvis item finnes lokalt, oppdater den; ellers legg til
         var existingIndex = DB.items.findIndex(function(item) { return item.id === newItem.id; });
@@ -1817,9 +1817,9 @@ function fetchFromGScript(silent) {
 }
 
 function exportCSV() {
-  let csv = "ID;QR ID;Kar nr;Dato;Lager;Leverandør;Størrelse;Brutto;Tara;Netto;Ut dato;Registrert av\n";
+  let csv = "ID;KAR-ID;Dato;Lager;Leverandør;Størrelse;Brutto;Tara;Netto;Ut dato;Registrert av\n";
   DB.items.forEach(i => {
-    csv += i.id + ";" + (i.qrId || "") + ";" + (i.kar || "") + ";" + i.dato + ";" + i.lager + ";" + i.lev + ";" + i.storrelse + ";" + i.brutto + ";" + i.tara + ";" + i.netto + ";" + (i.utDato || "") + ";" + (i.userInn || "") + "\n";
+    csv += i.id + ";" + (i.karId || "") + ";" + i.dato + ";" + i.lager + ";" + i.lev + ";" + i.storrelse + ";" + i.brutto + ";" + i.tara + ";" + i.netto + ";" + (i.utDato || "") + ";" + (i.userInn || "") + "\n";
   });
   const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
@@ -1829,9 +1829,9 @@ function exportCSV() {
 
 function exportExcel() {
   let html = '\u003chtml xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">\u003chead><meta charset="UTF-8">\u003cstyle>table{border-collapse:collapse;}th,td{border:1px solid #000;padding:5px;}\u003c/style\u003e\u003c/head\u003e\u003cbody><table>';
-  html += '<tr><th>ID</th><th>QR ID</th><th>Kar nr</th><th>Dato</th><th>Lager</th><th>Leverandør</th><th>Størrelse</th><th>Brutto</th><th>Tara</th><th>Netto</th><th>Ut dato</th><th>Registrert av</th></tr>';
+  html += '<tr><th>ID</th><th>KAR-ID</th><th>Dato</th><th>Lager</th><th>Leverandør</th><th>Størrelse</th><th>Brutto</th><th>Tara</th><th>Netto</th><th>Ut dato</th><th>Registrert av</th></tr>';
   DB.items.forEach(i => {
-    html += '<tr><td>' + i.id + '</td><td>' + (i.qrId || "") + '</td><td>' + (i.kar || "") + '</td><td>' + i.dato + '</td><td>' + i.lager + '</td><td>' + i.lev + '</td><td>' + i.storrelse + '</td><td>' + i.brutto + '</td><td>' + i.tara + '</td><td>' + i.netto + '</td><td>' + (i.utDato || "") + '</td><td>' + (i.userInn || "") + '</td></tr>';
+    html += '<tr><td>' + i.id + '</td><td>' + (i.qrId || "") + '</td><td>' + (i.karId || "") + '</td><td>' + i.dato + '</td><td>' + i.lager + '</td><td>' + i.lev + '</td><td>' + i.storrelse + '</td><td>' + i.brutto + '</td><td>' + i.tara + '</td><td>' + i.netto + '</td><td>' + (i.utDato || "") + '</td><td>' + (i.userInn || "") + '</td></tr>';
   });
   html += '</table>\u003c/body\u003e\u003c/html\u003e';
   const blob = new Blob([html], { type: "application/vnd.ms-excel" });
@@ -1848,35 +1848,48 @@ function exportPDF() {
     levSum[i.lev] = (levSum[i.lev] || 0) + i.netto;
   });
 
-  let html = '\u003c!DOCTYPE html\u003e\u003chtml>\u003chead><meta charset="UTF-8"><title>Varelager Rapport</title>';
-  html += '\u003cstyle>body{font-family:Arial,sans-serif;padding:20px;}h1{color:#333;}h2{color:#666;font-size:1.1rem;margin-top:20px;}';
-  html += 'table{width:100%;border-collapse:collapse;margin-top:10px;font-size:0.9rem;}th,td{border:1px solid #333;padding:6px;text-align:left;}';
-  html += 'th{background:#f0f0f0;font-weight:600;}tr:nth-child(even){background:#f9f9f9;}';
-  html += '.sum-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #ddd;}';
-  html += '.total{border-top:2px solid #333;font-weight:700;margin-top:5px;padding-top:8px;}';
-  html += '.right{text-align:right;} .num{color:#0066cc;font-weight:600;}\u003c/style\u003e\u003c/head\u003e\u003cbody>';
-  html += '<h1>📊 Varelager Rapport</h1><p style="color:#888;">Generert: ' + new Date().toLocaleString("no-NO") + '</p>';
+  const div = document.createElement("div");
+  div.style.fontFamily = "Arial,sans-serif";
+  div.style.padding = "20px";
+  div.style.background = "#fff";
+  div.style.color = "#000";
+  div.innerHTML = '<h1 style="color:#333;">📊 Varelager Rapport</h1><p style="color:#888;">Generert: ' + new Date().toLocaleString("no-NO") + '</p>';
 
-  html += '<h2>Sum pr. leverandør</h2>';
+  div.innerHTML += '<h2 style="color:#666;font-size:1.1rem;margin-top:20px;">Sum pr. leverandør</h2>';
   Object.entries(levSum).sort((a, b) => b[1] - a[1]).forEach(([lev, sum]) => {
-    html += '<div class="sum-row"><span>' + lev + '</span><span class="num">' + formatNumber(sum) + ' kg</span></div>';
+    div.innerHTML += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #ddd;"><span>' + lev + '</span><span style="color:#0066cc;font-weight:600;">' + formatNumber(sum) + ' kg</span></div>';
   });
-  html += '<div class="sum-row total"><span>TOTALT</span><span class="num">' + formatNumber(totalNetto) + ' kg</span></div>';
+  div.innerHTML += '<div style="display:flex;justify-content:space-between;padding:6px 0;margin-top:5px;border-top:2px solid #333;font-weight:700;"><span>TOTALT</span><span style="color:#0066cc;font-weight:600;">' + formatNumber(totalNetto) + ' kg</span></div>';
 
   const uniqueKar = new Set();
-  items.forEach(function(i) { var ks = i.kar ? String(i.kar) : ""; if (ks.trim() !== "") uniqueKar.add(ks.trim()); });
-  html += '<h2>Palleliste (' + items.length + ' registreringer, ' + uniqueKar.size + ' unike)</h2>';
-  html += '<table><thead><tr><th>QR ID</th><th>Størrelse</th><th>Netto</th><th>Leverandør</th><th>Dato</th><th>Døgn</th><th>Lager</th></tr></thead><tbody>';
+  items.forEach(function(i) { var ks = i.karId ? String(i.karId) : ""; if (ks.trim() !== "") uniqueKarId.add(ks.trim()); });
+  div.innerHTML += '<h2 style="color:#666;font-size:1.1rem;margin-top:20px;">Palleliste (' + items.length + ' registreringer, ' + uniqueKarId.size + ' unike)</h2>';
+  div.innerHTML += '<table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:0.9rem;"><thead><tr><th style="border:1px solid #333;padding:6px;text-align:left;background:#f0f0f0;font-weight:600;">KAR-ID</th><th style="border:1px solid #333;padding:6px;text-align:left;background:#f0f0f0;font-weight:600;">Størrelse</th><th style="border:1px solid #333;padding:6px;text-align:left;background:#f0f0f0;font-weight:600;">Netto</th><th style="border:1px solid #333;padding:6px;text-align:left;background:#f0f0f0;font-weight:600;">Leverandør</th><th style="border:1px solid #333;padding:6px;text-align:left;background:#f0f0f0;font-weight:600;">Dato</th><th style="border:1px solid #333;padding:6px;text-align:left;background:#f0f0f0;font-weight:600;">Døgn</th><th style="border:1px solid #333;padding:6px;text-align:left;background:#f0f0f0;font-weight:600;">Lager</th></tr></thead><tbody>';
   items.forEach(item => {
     const dogn = daysBetween(item.dato, new Date());
-    html += '<tr><td>' + (item.qrId || "N/A") + '</td><td>' + item.storrelse + '</td><td>' + formatNumber(item.netto) + '</td><td>' + item.lev + '</td><td>' + formatDateNo(item.dato) + '</td><td>' + dogn + '</td><td>' + item.lager + '</td></tr>';
+    div.innerHTML += '<tr style="background:#f9f9f9;"><td style="border:1px solid #333;padding:6px;">' + (item.karId || "N/A") + '</td><td style="border:1px solid #333;padding:6px;">' + item.storrelse + '</td><td style="border:1px solid #333;padding:6px;">' + formatNumber(item.netto) + '</td><td style="border:1px solid #333;padding:6px;">' + item.lev + '</td><td style="border:1px solid #333;padding:6px;">' + formatDateNo(item.dato) + '</td><td style="border:1px solid #333;padding:6px;">' + dogn + '</td><td style="border:1px solid #333;padding:6px;">' + item.lager + '</td></tr>';
   });
-  html += '</tbody></table>\u003c/body\u003e\u003c/html\u003e';
+  div.innerHTML += '</tbody></table>';
 
-  const blob = new Blob([html], { type: "application/pdf" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a"); a.href = url; a.download = "varelager_rapport.pdf"; a.click(); URL.revokeObjectURL(url);
-  showToast("PDF eksportert!");
+  if (typeof html2pdf === 'undefined') {
+    showToast("PDF-bibliotek ikke lastet. Vent et øyeblikk og prøv igjen.", "error");
+    return;
+  }
+
+  const opt = {
+    margin: 10,
+    filename: 'varelager_rapport.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(div).save().then(function() {
+    showToast("PDF eksportert!");
+  }).catch(function(err) {
+    console.error("PDF feil:", err);
+    showToast("PDF-feil: " + err.message, "error");
+  });
 }
 
 // ===================== INNSTILLINGER =====================
@@ -2107,7 +2120,7 @@ function manualQRInputInn() {
 
 function saveInnWithQR(qrId) {
   // Sjekk om QR-ID allerede finnes
-  if (DB.items.some(i => i.qrId === qrId && !i.utDato)) {
+  if (DB.items.some(i => i.karId === qrId && !i.utDato)) {
     showToast("Advarsel: QR-kode finnes allerede!", "error");
   }
 
