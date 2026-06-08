@@ -174,7 +174,7 @@ function loadHtml5Qrcode(callback) {
   document.head.appendChild(script);
 }
 
-const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.1.0" };
+const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.1.2" };
 
 let LAGRE = ["Kjøpslager", "Sortert", "Produsert", "Slettet"];
 let LEVERANDORER = ["Kjøllefjord", "Båtsfjord", "Berlevåg", "Nesseby"];
@@ -887,8 +887,12 @@ function saveEdit() {
 function deleteItem(id) {
   const pass = prompt("Admin-passord for sletting:");
   if (pass !== CONFIG.ADMIN_PASS) { showToast("Feil passord", "error"); return; }
-  DB.items = DB.items.filter(i => i.id !== id);
-  saveDB(); showToast("Vare slettet!"); filterKorr();
+  const item = DB.items.find(i => i.id === id);
+  if (!item) { showToast("Vare ikke funnet", "error"); return; }
+  item.lager = "Slettet";
+  item.utDato = new Date().toISOString();
+  item.userUt = currentUser ? currentUser.name : "";
+  saveDB(); showToast("Vare flyttet til Slettet!"); filterKorr();
 }
 
 // ===================== RAPPORTER =====================
