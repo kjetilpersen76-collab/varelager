@@ -174,7 +174,7 @@ function loadHtml5Qrcode(callback) {
   document.head.appendChild(script);
 }
 
-const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.1.2" };
+const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.1.3" };
 
 let LAGRE = ["Kjøpslager", "Sortert", "Produsert", "Slettet"];
 let LEVERANDORER = ["Kjøllefjord", "Båtsfjord", "Berlevåg", "Nesseby"];
@@ -813,8 +813,7 @@ function renderKorr(content) {
     `<div class="form-row"><div class="form-group"><label>Lager</label><select id="korrLager"><option value="">Alle</option>${LAGRE.filter(l => l !== "Slettet").map(l => `<option value="${l}">${l}</option>`).join("")}</select></div>` +
     `<div class="form-group"><label>Størrelse</label><select id="korrStorrelse"><option value="">Alle</option></select></div></div>` +
     `<div class="form-group"><label>Leverandør</label><select id="korrLev"><option value="">Alle</option>${LEVERANDORER.map(l => `<option value="${l}">${l}</option>`).join("")}</select></div>` +
-    `<div class="checkbox-row"><input type="checkbox" id="korrVisProd"><label for="korrVisProd">Vis produserte varer</label></div>` +
-    `<div class="checkbox-row"><input type="checkbox" id="korrVisSlettet"><label for="korrVisSlettet">Vis slettede varer</label></div>` +
+    `<div class="checkbox-row" style="display:flex;gap:20px;"><div style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="korrVisProd"><label for="korrVisProd">Vis produserte varer</label></div><div style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="korrVisSlettet"><label for="korrVisSlettet">Vis slettede varer</label></div></div>` +
     `<div class="btn-row"><button class="btn btn-primary" onclick="filterKorr()">🔍 Søk</button><button class="btn btn-secondary" onclick="clearKorrFilter()">Nullstill</button></div></div>` +
     `<div id="korrResult"></div>`;
 }
