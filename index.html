@@ -176,7 +176,7 @@ function loadHtml5Qrcode(callback) {
   document.head.appendChild(script);
 }
 
-const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.2.2" };
+const CONFIG = { ADMIN_PASS: "admin1234", VERSION: "2.2.3" };
 
 let LAGRE = ["Kjøpslager", "Sortert", "Produsert", "Slettet"];
 let LEVERANDORER = ["Kjøllefjord", "Båtsfjord", "Berlevåg", "Nesseby"];
@@ -511,20 +511,30 @@ function kalkSearch() {
 }
 
 function processUt(search) {
-  const item = DB.items.find(i => {
+  const items = DB.items.filter(i => {
     const karIdStr = i.karId ? String(i.karId) : "";
-    return karIdStr.toLowerCase() === search.toLowerCase();
+    return karIdStr.toLowerCase() === search.toLowerCase() && i.lager !== "Produsert" && i.lager !== "Slettet";
   });
-  if (!item) { showToast("Vare ikke funnet", "error"); return; }
-  if (item.lager === "Produsert") { showToast("Vare er allerede produsert", "error"); return; }
+  if (items.length === 0) { showToast("Vare ikke funnet", "error"); return; }
 
-  $("utResult").innerHTML = `<div class="section" style="margin-top:15px;"><div class="section-title">Vare funnet</div>` +
-    `<p><strong>KAR-ID:</strong> ${item.karId || "N/A"}</p>` +
-    `<p><strong>Lager:</strong> ${item.lager}</p><p><strong>Størrelse:</strong> ${item.storrelse}</p>` +
-    `<p><strong>Netto:</strong> ${formatNumber(item.netto)} kg</p><p><strong>Inn dato:</strong> ${formatDateNo(item.dato)}</p>` +
-    `<div class="info-box warning" style="margin-top:10px;">Varen vil flyttes til <strong>Produsert</strong></div>` +
-    `<div class="btn-row"><button class="btn btn-success" onclick="confirmUt('${item.id}')">✅ Flytt til Produsert</button>` +
+  let html = `<div class="section" style="margin-top:15px;"><div class="section-title">${items.length} vare(r) funnet med KAR-ID: ${search}</div>` +
+    `<table class="data-table"><thead><tr><th>Velg</th><th>KAR-ID</th><th>Lager</th><th>Leverandør</th><th>Størrelse</th><th>Netto</th><th>Inn dato</th></tr></thead><tbody>`;
+  items.forEach(item => {
+    html += `<tr>` +
+      `<td><input type="checkbox" class="ut-select" data-id="${item.id}" checked></td>` +
+      `<td>${item.karId || "N/A"}</td>` +
+      `<td>${item.lager}</td>` +
+      `<td>${item.lev}</td>` +
+      `<td>${item.storrelse}</td>` +
+      `<td>${formatNumber(item.netto)} kg</td>` +
+      `<td>${formatDateNo(item.dato)}</td>` +
+      `</tr>`;
+  });
+  html += `</tbody></table>` +
+    `<div class="info-box warning" style="margin-top:10px;">Valgte varer vil flyttes til <strong>Produsert</strong></div>` +
+    `<div class="btn-row"><button class="btn btn-success" onclick="confirmUtBulk()">✅ Flytt valgte til Produsert</button>` +
     `<button class="btn btn-danger" onclick="document.getElementById('utResult').innerHTML=''">Avbryt</button></div></div>`;
+  $("utResult").innerHTML = html;
 }
 
 function confirmUt(id) {
@@ -534,6 +544,18 @@ function confirmUt(id) {
   item.utDato = new Date().toISOString();
   item.userUt = currentUser.name;
   saveDB(); showToast("Vare flyttet til Produsert!"); $("utResult").innerHTML = "";
+  if ($("utLagerOversikt") && $("utLagerOversikt").value) showLagerOversikt();
+}
+
+function confirmUtBulk() {
+  const checkboxes = document.querySelectorAll(".ut-select:checked");
+  if (checkboxes.length === 0) { showToast("Ingen varer valgt", "error"); return; }
+  const ids = Array.from(checkboxes).map(cb => cb.dataset.id);
+  ids.forEach(id => {
+    const item = DB.items.find(i => i.id === id);
+    if (item) { item.lager = "Produsert"; item.utDato = new Date().toISOString(); item.userUt = currentUser.name; }
+  });
+  saveDB(); showToast(ids.length + " varer flyttet til Produsert!"); $("utResult").innerHTML = "";
   if ($("utLagerOversikt") && $("utLagerOversikt").value) showLagerOversikt();
 }
 
