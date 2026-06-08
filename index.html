@@ -814,6 +814,7 @@ function renderKorr(content) {
     `<div class="form-group"><label>Størrelse</label><select id="korrStorrelse"><option value="">Alle</option></select></div></div>` +
     `<div class="form-group"><label>Leverandør</label><select id="korrLev"><option value="">Alle</option>${LEVERANDORER.map(l => `<option value="${l}">${l}</option>`).join("")}</select></div>` +
     `<div class="checkbox-row"><input type="checkbox" id="korrVisProd"><label for="korrVisProd">Vis produserte varer</label></div>` +
+    `<div class="checkbox-row"><input type="checkbox" id="korrVisSlettet"><label for="korrVisSlettet">Vis slettede varer</label></div>` +
     `<div class="btn-row"><button class="btn btn-primary" onclick="filterKorr()">🔍 Søk</button><button class="btn btn-secondary" onclick="clearKorrFilter()">Nullstill</button></div></div>` +
     `<div id="korrResult"></div>`;
 }
@@ -825,6 +826,7 @@ function filterKorr() {
   const storrelse = $("korrStorrelse").value;
   const lev = $("korrLev").value;
   const visProd = $("korrVisProd").checked;
+  const visSlettet = $("korrVisSlettet").checked;
 
   let items = DB.items.filter(i => {
     const d = new Date(i.dato);
@@ -834,6 +836,7 @@ function filterKorr() {
     if (storrelse && i.storrelse !== storrelse) return false;
     if (lev && i.lev !== lev) return false;
     if (!visProd && i.lager === "Produsert") return false;
+    if (!visSlettet && i.lager === "Slettet") return false;
     return true;
   }).sort((a, b) => new Date(b.dato) - new Date(a.dato));
 
@@ -852,6 +855,7 @@ function filterKorr() {
 function clearKorrFilter() {
   $("korrFra").value = ""; $("korrTil").value = ""; $("korrLager").value = "";
   $("korrStorrelse").value = ""; $("korrLev").value = ""; $("korrVisProd").checked = false;
+  $("korrVisSlettet").checked = false;
   $("korrResult").innerHTML = "";
 }
 
